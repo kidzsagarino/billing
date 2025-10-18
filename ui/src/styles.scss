@@ -1,0 +1,18 @@
+/* You can add global styles to this file, and also import other style files */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+/* Target all mat-select panels globally */
+.mat-select-panel {
+  border-radius: 0.5rem !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15) !important;
+  padding: 0.25rem 0 !important;
+}
+
+/* Outline color when focused */
+.mat-form-field.mat-focused .mat-form-field-outline {
+  border-color: #3b82f6;
+}

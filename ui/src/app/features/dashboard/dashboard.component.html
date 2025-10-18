@@ -1,0 +1,107 @@
+<h1 class="mb-8 text-3xl font-bold text-gray-800">Dashboard</h1>
+
+<!-- Filters -->
+<div class="flex gap-4 mb-8">
+  <select class="border rounded px-3 py-1">
+    <option value="">2025</option>
+    <option value="">2024</option>
+    <option value="">2023</option>
+  </select>
+
+  <select class="border rounded px-3 py-1">
+    <option value="">All Months</option>
+    <option value="1">January</option>
+    <option value="2">February</option>
+    <option value="3">March</option>
+    <option value="4">April</option>
+  </select>
+</div>
+
+<!-- Flex row for 4 cards -->
+<div class="flex flex-wrap gap-6 mb-12 justify-between">
+  <div class="flex-1 min-w-[220px] rounded-xl shadow-lg transform hover:scale-105 transition-transform duration-300 p-6 flex flex-col items-center">
+    <div class="flex items-center justify-center mb-4">
+      <div class="text-white bg-blue-500 p-3 rounded-full text-4xl">🏦</div>
+    </div>
+    <div class="text-gray-500 font-medium text-sm uppercase tracking-wide text-center">Total Due</div>
+    <div class="text-3xl font-extrabold text-gray-900 text-center mt-2">₱ 120,000</div>
+  </div>
+
+  <div class="flex-1 min-w-[220px] rounded-xl shadow-lg transform hover:scale-105 transition-transform duration-300 p-6 flex flex-col items-center">
+    <div class="flex items-center justify-center mb-4">
+      <div class="text-white bg-green-500 p-3 rounded-full text-4xl">💰</div>
+    </div>
+    <div class="text-gray-500 font-medium text-sm uppercase tracking-wide text-center">Total Paid</div>
+    <div class="text-3xl font-extrabold text-gray-900 text-center mt-2">₱ 90,000</div>
+  </div>
+
+  <div class="flex-1 min-w-[220px] rounded-xl shadow-lg transform hover:scale-105 transition-transform duration-300 p-6 flex flex-col items-center">
+    <div class="flex items-center justify-center mb-4">
+      <div class="text-white bg-yellow-500 p-3 rounded-full text-4xl">💳</div>
+    </div>
+    <div class="text-gray-500 font-medium text-sm uppercase tracking-wide text-center">Balance</div>
+    <div class="text-3xl font-extrabold text-gray-900 text-center mt-2">₱ 30,000</div>
+  </div>
+
+  <div class="flex-1 min-w-[220px] rounded-xl shadow-lg transform hover:scale-105 transition-transform duration-300 p-6 flex flex-col items-center">
+    <div class="flex items-center justify-center mb-4">
+      <div class="text-white bg-purple-500 p-3 rounded-full text-4xl">👥</div>
+    </div>
+    <div class="text-gray-500 font-medium text-sm uppercase tracking-wide text-center">Move-ins</div>
+    <div class="text-3xl font-extrabold text-gray-900 text-center mt-2">25</div>
+  </div>
+</div>
+<!-- Pie Chart -->
+<div class="w-full md:w-1/2 mb-12">
+  <h2 class="text-lg font-semibold mb-4">Billing Summary</h2>
+  <canvas id="billingPie"></canvas>
+</div>
+
+<!-- Stacked Bar Chart -->
+<div class="w-full md:w-3/4">
+  <h2 class="text-lg font-semibold mb-4">Building-wise Payments</h2>
+  <canvas id="buildingBar"></canvas>
+</div>
+
+<!-- Sample data table -->
+<div class="overflow-x-auto mt-12">
+<table class="min-w-full border border-gray-200">
+  <thead class="bg-gray-100">
+    <tr>
+      <th class="px-4 py-2 text-left">Bldg</th>
+      <th class="px-4 py-2 text-left">Unit</th>
+      <th class="px-4 py-2 text-left">Owner</th>
+      <th class="px-4 py-2 text-right">Due</th>
+      <th class="px-4 py-2 text-right">Paid</th>
+      <th class="px-4 py-2 text-right">Balance</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="hover:bg-gray-50">
+      <td class="px-4 py-2">301</td>
+      <td class="px-4 py-2">101</td>
+      <td class="px-4 py-2">John Doe</td>
+      <td class="px-4 py-2 text-right">₱ 5,000</td>
+      <td class="px-4 py-2 text-right">₱ 4,000</td>
+      <td class="px-4 py-2 text-right">₱ 1,000</td>
+    </tr>
+    <tr class="hover:bg-gray-50">
+      <td class="px-4 py-2">301</td>
+      <td class="px-4 py-2">102</td>
+      <td class="px-4 py-2">Jane Smith</td>
+      <td class="px-4 py-2 text-right">₱ 6,000</td>
+      <td class="px-4 py-2 text-right">₱ 6,000</td>
+      <td class="px-4 py-2 text-right">₱ 0</td>
+    </tr>
+    <tr class="hover:bg-gray-50">
+      <td class="px-4 py-2">301</td>
+      <td class="px-4 py-2">103</td>
+      <td class="px-4 py-2">Mike Johnson</td>
+      <td class="px-4 py-2 text-right">₱ 5,500</td>
+      <td class="px-4 py-2 text-right">₱ 5,000</td>
+      <td class="px-4 py-2 text-right">₱ 500</td>
+    </tr>
+  </tbody>
+</table>
+
+</div>

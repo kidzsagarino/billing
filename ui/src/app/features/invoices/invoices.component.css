@@ -1,0 +1,28 @@
+table {
+  width: 100%;
+  margin-top: 16px;
+}
+
+th, td {
+  text-align: center;
+  padding: 8px;
+}
+
+h2 {
+  margin-bottom: 12px;
+}
+
+.paid {
+  color: green;
+  font-weight: bold;
+}
+
+.unpaid {
+  color: red;
+  font-weight: bold;
+}
+
+.voided {
+  color: gray;
+  font-style: italic;
+}

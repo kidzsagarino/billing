@@ -1,0 +1,23 @@
+<mat-sidenav-container class="h-screen">
+        <mat-sidenav mode="side" opened class="w-64">
+            <div class="p-4 text-xl font-semibold">Billing UI</div>
+            <mat-nav-list>
+                <a mat-list-item routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+                <a mat-list-item routerLink="/customers" routerLinkActive="active">Customers</a>
+                <a mat-list-item routerLink="/units" routerLinkActive="active">Units</a>
+                <a mat-list-item routerLink="/invoices" routerLinkActive="active">Invoices</a>
+                <a mat-list-item routerLink="/billing-run" routerLinkActive="active">Billing Run</a>
+                <a mat-list-item routerLink="/payments" routerLinkActive="active">Payments</a>
+            </mat-nav-list>
+        </mat-sidenav>
+        <mat-sidenav-content>
+            <mat-toolbar color="primary">
+                <span class="font-semibold">Condo Billing Management</span>
+                <span class="flex-1"></span>
+                <button mat-icon-button aria-label="Notifications"><mat-icon>notifications</mat-icon></button>
+            </mat-toolbar>
+        <div class="p-6">
+        <router-outlet />
+        </div>
+        </mat-sidenav-content>
+    </mat-sidenav-container>
