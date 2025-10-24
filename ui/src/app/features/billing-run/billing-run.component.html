@@ -1,7 +1,7 @@
 <h1 class="mb-3 text-2xl font-bold">Billing Summary</h1>
+
 <!-- Text Input Group -->
 <div class="flex flex-wrap gap-4 mb-3 p-4 bg-white rounded-lg shadow-md">
-
   <!-- Owner Name (Static) -->
   <div class="w-full mb-2">
     <span class="text-gray-700 font-semibold text-lg">Owner: Juan Dela Cruz</span>
@@ -9,196 +9,112 @@
 
   <!-- Building Number -->
   <div class="flex-1 min-w-[140px] flex flex-col">
-    <input matInput [(ngModel)]="searchBuilding" placeholder="Bldg. #"
+    <input matInput placeholder="Bldg. #"
            class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
   </div>
 
   <!-- Unit Number -->
   <div class="flex-1 min-w-[140px] flex flex-col">
-    <input matInput [(ngModel)]="searchUnit" placeholder="Unit #"
+    <input matInput placeholder="Unit #"
            class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
   </div>
-
 </div>
-
 
 <!-- Dropdowns + Buttons Group -->
 <div class="flex flex-wrap justify-center items-center gap-4 mb-3 p-4 bg-white rounded-lg shadow-md">
-<div class="flex flex-wrap gap-4 mb-3">
+  <div class="flex flex-wrap gap-4 mb-3">
 
-  <!-- Year Dropdown -->
-  <div class="flex-1 min-w-[140px] flex flex-col">
-    <select 
-      class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-      [(ngModel)]="selectedYear">
-      <option *ngFor="let y of years" [value]="y">{{ y }}</option>
-    </select>
+    <!-- Year Dropdown -->
+    <div class="flex-1 min-w-[140px] flex flex-col">
+      <select 
+        class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        [(ngModel)]="selectedYear">
+        <option *ngFor="let y of years" [value]="y">{{ y }}</option>
+      </select>
+    </div>
+
+    <!-- Month Dropdown -->
+    <div class="flex-1 min-w-[140px] flex flex-col">
+      <select 
+        class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        [(ngModel)]="selectedMonth">
+        <option *ngFor="let m of months" [value]="m">{{ m }}</option>
+      </select>
+    </div>
+
+    <div class="flex flex-wrap gap-4 items-center">
+
+      <!-- Generate Billing -->
+      <button 
+        class="bg-blue-600 text-white font-semibold rounded-md px-5 py-2 shadow-sm hover:shadow-md hover:bg-blue-700 transition"
+        (click)="generateBilling()">
+        Generate Billing
+      </button>
+
+      <!-- Generate SOA -->
+      <button 
+        class="bg-teal-600 text-white font-semibold rounded-md px-5 py-2 shadow-sm hover:shadow-md hover:bg-teal-700 transition">
+        Generate SOA
+      </button>
+
+      <!-- Print -->
+      <button 
+        class="bg-white border border-red-500 text-red-500 font-semibold rounded-md px-5 py-2 shadow-sm hover:shadow-md hover:bg-red-50 transition"
+       >
+        Print
+      </button>
+
+    </div>
   </div>
-
-  <!-- Month Dropdown -->
-  <div class="flex-1 min-w-[140px] flex flex-col">
-    <select 
-      class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-      [(ngModel)]="selectedMonth">
-      <option *ngFor="let m of months" [value]="m">{{ m }}</option>
-    </select>
-  </div>
-<div class="flex flex-wrap gap-4 items-center">
-
-  <!-- Generate Billing -->
-  <button 
-    class="bg-blue-600 text-white font-semibold rounded-md px-5 py-2 shadow-sm hover:shadow-md hover:bg-blue-700 transition"
-    (click)="generateBilling()">
-    Generate Billing
-  </button>
-
-  <!-- Generate SOA -->
-  <button 
-    class="bg-teal-600 text-white font-semibold rounded-md px-5 py-2 shadow-sm hover:shadow-md hover:bg-teal-700 transition"
-    (click)="generateSOA()">
-    Generate SOA
-  </button>
-
-  <!-- Print -->
-  <button 
-    class="bg-white border border-red-500 text-red-500 font-semibold rounded-md px-5 py-2 shadow-sm hover:shadow-md hover:bg-red-50 transition"
-    (click)="printStatement()">
-    Print
-  </button>
-
 </div>
 
-</div>
-  <!-- Action Buttons -->
-</div>
-
-<!-- Owner Detailed Billing (Always Visible for Selected Owner) -->
+<!-- Owner Detailed Billing -->
 <div class="overflow-x-auto p-4 border rounded-lg bg-gray-50 shadow-sm">
-  <h3 class="font-semibold mb-4 text-lg">Owner Detail - Juan Dela Cruz</h3>
 
   <table class="min-w-full table-auto border-collapse">
     <thead class="bg-gray-100">
       <tr>
-        <th class="py-2 px-4 text-left text-gray-700 font-semibold">Item</th>
-        <th class="py-2 px-4">Jan-25</th>
-        <th class="py-2 px-4">Feb-25</th>
-        <th class="py-2 px-4">Mar-25</th>
-        <th class="py-2 px-4">Apr-25</th>
-        <th class="py-2 px-4">May-25</th>
-        <th class="py-2 px-4">Jun-25</th>
-        <th class="py-2 px-4">Jul-25</th>
-        <th class="py-2 px-4">Aug-25</th>
-        <th class="py-2 px-4">Sep-25</th>
-        <th class="py-2 px-4">Oct-25</th>
-        <th class="py-2 px-4">Nov-25</th>
-        <th class="py-2 px-4">Dec-25</th>
+        <th class="px-4 py-2 border">#</th>
+        <th class="px-4 py-2 border">Full Name</th>
+        <th class="px-4 py-2 border">Unit #</th>
+        <th class="px-4 py-2 border">Billing Month</th>
+        <th class="px-4 py-2 border">Due Date</th>
+        <th class="px-4 py-2 border text-right">Condo Dues</th>
+        <th class="px-4 py-2 border text-right">Water Bill</th>
+        <th class="px-4 py-2 border text-right">Overdue</th>
+        <th class="px-4 py-2 border text-right">Penalty</th>
+        <th class="px-4 py-2 border text-right">Total</th>
+        <th class="px-4 py-2 border text-right">Paid</th>
+        <th class="px-4 py-2 border text-right">Balance</th>
+        <th class="px-4 py-2 border">Status</th>
       </tr>
     </thead>
     <tbody>
-      <tr class="border-b hover:bg-gray-50">
-        <td class="py-2 px-4 font-medium">Condo Due</td>
-        <td class="py-2 px-4">2,000.00</td>
-        <td class="py-2 px-4">2,000.00</td>
-        <td class="py-2 px-4">2,000.00</td>
-        <td class="py-2 px-4">2,000.00</td>
-        <td class="py-2 px-4">2,000.00</td>
-        <td class="py-2 px-4">2,000.00</td>
-        <td class="py-2 px-4">2,000.00</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
+      <!-- Loading row -->
+      <tr *ngIf="loading">
+        <td colspan="13" class="text-center p-4">Loading...</td>
       </tr>
-      <tr class="border-b hover:bg-gray-50">
-        <td class="py-2 px-4 font-medium">Water Bill</td>
-        <td class="py-2 px-4">575.48</td>
-        <td class="py-2 px-4">572.33</td>
-        <td class="py-2 px-4">589.65</td>
-        <td class="py-2 px-4">631.35</td>
-        <td class="py-2 px-4">490.42</td>
-        <td class="py-2 px-4">165.00</td>
-        <td class="py-2 px-4">225.23</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
+
+      <!-- Billing rows -->
+      <tr *ngFor="let bill of billings; let i = index">
+        <td class="border px-4 py-2 text-center">{{ i + 1 }}</td>
+        <td class="border px-4 py-2">{{ bill.FullName }}</td>
+        <td class="border px-4 py-2">{{ bill.UnitNumber }}</td>
+        <td class="border px-4 py-2 text-center">{{ bill.BillingMonth }}</td>
+        <td class="border px-4 py-2 text-center">{{ bill.DueDate | date:'yyyy-MM-dd' }}</td>
+        <td class="border px-4 py-2 text-right">₱{{ bill.CondoDues | number:'1.2-2' }}</td>
+        <td class="border px-4 py-2 text-right">₱{{ bill.WaterBill | number:'1.2-2' }}</td>
+        <td class="border px-4 py-2 text-right">₱{{ bill.OverdueAmount | number:'1.2-2' }}</td>
+        <td class="border px-4 py-2 text-right">₱{{ bill.Penalty | number:'1.2-2' }}</td>
+        <td class="border px-4 py-2 text-right font-semibold">₱{{ bill.TotalAmount | number:'1.2-2' }}</td>
+        <td class="border px-4 py-2 text-right">₱{{ bill.PaidAmount | number:'1.2-2' }}</td>
+        <td class="border px-4 py-2 text-right text-red-600">₱{{ bill.Balance | number:'1.2-2' }}</td>
+        <td class="border px-4 py-2 text-center">{{ bill.Status }}</td>
       </tr>
-      <tr class="border-b hover:bg-gray-50">
-        <td class="py-2 px-4 font-medium">Overdue</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-0.58</td>
-        <td class="py-2 px-4">-0.58</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
-      </tr>
-      <tr class="border-b hover:bg-gray-50">
-        <td class="py-2 px-4 font-medium">Penalty</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
-      </tr>
-      <tr class="border-b hover:bg-gray-50">
-        <td class="py-2 px-4 font-medium">Total</td>
-        <td class="py-2 px-4">2,575.48</td>
-        <td class="py-2 px-4">2,572.33</td>
-        <td class="py-2 px-4">2,589.65</td>
-        <td class="py-2 px-4">2,631.35</td>
-        <td class="py-2 px-4">2,490.42</td>
-        <td class="py-2 px-4">2,164.42</td>
-        <td class="py-2 px-4">2,224.65</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
-      </tr>
-      <tr class="border-b hover:bg-gray-50">
-        <td class="py-2 px-4 font-medium">Payments</td>
-        <td class="py-2 px-4">2,575.48</td>
-        <td class="py-2 px-4">2,572.33</td>
-        <td class="py-2 px-4">2,589.65</td>
-        <td class="py-2 px-4">2,631.35</td>
-        <td class="py-2 px-4">2,491.00</td>
-        <td class="py-2 px-4">2,165.00</td>
-        <td class="py-2 px-4">2,225.00</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
-      </tr>
-      <tr class="border-b hover:bg-gray-50">
-        <td class="py-2 px-4 font-medium">Balance</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4 text-red-600 font-bold">-0.58</td>
-        <td class="py-2 px-4 text-red-600 font-bold">-0.58</td>
-        <td class="py-2 px-4 text-red-600 font-bold">-0.35</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
-        <td class="py-2 px-4">-</td>
+
+      <!-- No records -->
+      <tr *ngIf="!loading && billings.length === 0">
+        <td colspan="13" class="text-center p-4 text-gray-500">No billing records found.</td>
       </tr>
     </tbody>
   </table>

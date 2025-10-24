@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -7,22 +7,24 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 
-interface Tenant {
-  ownerName: string;
-  buildingNo: string;
-  unitNo: string;
-  moveInDate: Date;
-  mobileNumber: string;
-  email: string;
-  details: Array<{
-    condo: number;
-    water: number;
-    overdue: number;
-    penalty: number;
-    total: number;
-    payments: number;
-    balance: number;
-  }>;
+import { Component, OnInit } from '@angular/core';
+import { BillingService } from '../../services/billing.service';
+
+import { BillingRecord } from '../../models/billing.model';
+
+export interface Billing {
+  FullName: string;
+  UnitNumber: string;
+  BillingMonth: string;
+  DueDate: string;
+  CondoDues: number;
+  WaterBill: number;
+  OverdueAmount: number;
+  Penalty: number;
+  TotalAmount: number;
+  PaidAmount: number;
+  Balance: number;
+  Status: 'Unpaid' | 'Paid' | 'PartiallyPaid' | 'Overdue';
 }
 
 @Component({
@@ -41,91 +43,66 @@ interface Tenant {
   styleUrls: ['./billing-run.component.css']
 })
 export class BillingRunComponent {
+  billings: Billing[] = [];
+  billingMonth: string = '2025-10'; // default month (can be changed by UI)
+  loading = false;
 
-  
-  // Filters
-  years = [2022, 2023, 2024, 2025];
-  months = ['Jan-25','Feb-25','Mar-25','Apr-25','May-25','Jun-25','Jul-25','Aug-25','Sep-25','Oct-25','Nov-25','Dec-25'];
-  buildings = ['Building 1', 'Building 2', 'Building 3'];
+    // Dropdown selections
+  selectedYear: number = 2025;
+  selectedMonth: number = 10;
 
-  allColumns: string[] = ['item', ...this.months];
+  // Year and month arrays for dropdowns
+  years: number[] = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i); // last 5 years
+  months: number[] = Array.from({ length: 12 }, (_, i) => i + 1);
 
-  selectedYear = new Date().getFullYear();
-  selectedMonth = this.months[new Date().getMonth()];
-  selectedBuilding = this.buildings[0];
+  constructor(private billingService: BillingService) {}
 
-  searchBuilding = '';
-  searchUnit = '';
-
-  isGenerated = false;
-
-  displayedColumns: string[] = ['tenant', 'buildingNo', 'unitNo'];
-
-  tenants: Tenant[] = [
-    {
-      ownerName: 'Juan Dela Cruz',
-      buildingNo: '1',
-      unitNo: '101',
-      moveInDate: new Date('2023-05-15'),
-      mobileNumber: '09171234567',
-      email: 'juan.delacruz@example.com',
-      details: [
-        { condo:2000, water:575.48, overdue:0, penalty:0, total:2575.48, payments:2575.48, balance:0 },
-        { condo:2000, water:572.33, overdue:0, penalty:0, total:2572.33, payments:2572.33, balance:0 },
-        { condo:2000, water:589.65, overdue:0, penalty:0, total:2589.65, payments:2589.65, balance:0 },
-        { condo:2000, water:631.35, overdue:0, penalty:0, total:2631.35, payments:2631.35, balance:0 },
-        { condo:2000, water:490.42, overdue:0, penalty:0, total:2490.42, payments:2491, balance:-0.58 },
-        { condo:2000, water:165, overdue:-0.58, penalty:0, total:2164.42, payments:2165, balance:-0.58 },
-        { condo:2000, water:225.23, overdue:-0.58, penalty:0, total:2224.65, payments:2225, balance:-0.35 },
-        { condo:0, water:0, overdue:0, penalty:0, total:0, payments:0, balance:0 },
-        { condo:0, water:0, overdue:0, penalty:0, total:0, payments:0, balance:0 },
-        { condo:0, water:0, overdue:0, penalty:0, total:0, payments:0, balance:0 },
-        { condo:0, water:0, overdue:0, penalty:0, total:0, payments:0, balance:0 },
-        { condo:0, water:0, overdue:0, penalty:0, total:0, payments:0, balance:0 },
-      ]
-    }
-  ];
-
-  selectedTenant: Tenant | null = null;
-  billingItems = ['Condo Due','Water Bill','Overdue','Penalty','Total','Payments','Balance'];
-
-  filteredTenants() {
-    return this.tenants.filter(t =>
-      (!this.searchBuilding || t.buildingNo.includes(this.searchBuilding)) &&
-      (!this.searchUnit || t.unitNo.includes(this.searchUnit))
-    );
+  ngOnInit() {
+    this.loadBilling();
   }
 
-  showDetail(tenant: Tenant) {
-    this.selectedTenant = tenant;
+  get billingMonthString(): string {
+    return `${this.selectedYear}-${this.selectedMonth.toString().padStart(2, '0')}`;
   }
 
-  getBillingValue(item: string, monthIndex: number) {
-    if (!this.selectedTenant) return 0;
-    const detail = this.selectedTenant.details[monthIndex];
-    switch(item) {
-      case 'Condo Due': return detail.condo;
-      case 'Water Bill': return detail.water;
-      case 'Overdue': return detail.overdue;
-      case 'Penalty': return detail.penalty;
-      case 'Total': return detail.total;
-      case 'Payments': return detail.payments;
-      case 'Balance': return detail.balance;
-      default: return 0;
-    }
-  }
+  loadBilling() {
+    this.loading = true;
 
-  generateBilling() {
-    console.log('Generate Billing for', this.selectedYear, this.selectedMonth, this.selectedBuilding);
-    this.isGenerated = true;
-  }
+    // Format YYYY-MM
+    const monthStr = this.selectedMonth.toString().padStart(2, '0');
+    const billingMonth = `${this.selectedYear}-${monthStr}`;
 
-  generateSOA() {
-    console.log('Generate SOA for', this.selectedYear, this.selectedMonth, this.selectedBuilding);
-    this.isGenerated = true;
+    this.billingService.getBillingByMonth(billingMonth).subscribe({
+      next: (data: any) => {
+        
+        if(data.status == 0){
+          console.log('No records found');
+        }
+        else{
+          this.billings = data.data;
+        }
+        // Apply optional search filters
+       
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Failed to load billing:', err);
+        this.loading = false;
+      }
+    });
   }
-
-  printStatement() {
-    window.print();
-  }
+  generateBilling(): void {
+    this.loading = true;
+    this.billingService.generateBilling(this.billingMonthString).subscribe({
+      next: (res: any) => {
+        console.log(res.message); // e.g., "Billing for 2025-10 generated."
+        // Reload table after generation
+        this.loadBilling();
+      },
+      error: (err) => {
+        console.error('Failed to generate billing:', err);
+        this.loading = false;
+      }
+    });
+  } 
 }
