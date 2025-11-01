@@ -2,20 +2,20 @@
 
 <!-- Text Input Group -->
 <div class="flex flex-wrap gap-4 mb-3 p-4 bg-white rounded-lg shadow-md">
-  <!-- Owner Name (Static) -->
-  <div class="w-full mb-2">
-    <span class="text-gray-700 font-semibold text-lg">Owner: Juan Dela Cruz</span>
-  </div>
-
   <!-- Building Number -->
+   
   <div class="flex-1 min-w-[140px] flex flex-col">
-    <input matInput placeholder="Bldg. #"
+     <label class="block text-sm font-semibold mb-1">Building</label>
+    <input placeholder="Bldg. #" value="303"
            class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
   </div>
 
   <!-- Unit Number -->
   <div class="flex-1 min-w-[140px] flex flex-col">
-    <input matInput placeholder="Unit #"
+     <label class="block text-sm font-semibold mb-1">Unit #</label>
+    <input placeholder="Enter Unit #"
+    [(ngModel)]="searchTerm"
+    (ngModelChange)="search()"
            class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
   </div>
 </div>
@@ -28,7 +28,8 @@
     <div class="flex-1 min-w-[140px] flex flex-col">
       <select 
         class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-        [(ngModel)]="selectedYear">
+        [(ngModel)]="selectedYear"
+        (ngModelChange)="loadBilling()">
         <option *ngFor="let y of years" [value]="y">{{ y }}</option>
       </select>
     </div>
@@ -37,7 +38,8 @@
     <div class="flex-1 min-w-[140px] flex flex-col">
       <select 
         class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-        [(ngModel)]="selectedMonth">
+        [(ngModel)]="selectedMonth"
+        (ngModelChange)="loadBilling()">
         <option *ngFor="let m of months" [value]="m">{{ m }}</option>
       </select>
     </div>
@@ -51,18 +53,18 @@
         Generate Billing
       </button>
 
-      <!-- Generate SOA -->
+      <!-- Generate SOA
       <button 
         class="bg-teal-600 text-white font-semibold rounded-md px-5 py-2 shadow-sm hover:shadow-md hover:bg-teal-700 transition">
         Generate SOA
-      </button>
+      </button> -->
 
       <!-- Print -->
-      <button 
+      <!-- <button 
         class="bg-white border border-red-500 text-red-500 font-semibold rounded-md px-5 py-2 shadow-sm hover:shadow-md hover:bg-red-50 transition"
        >
         Print
-      </button>
+      </button> -->
 
     </div>
   </div>
@@ -70,12 +72,11 @@
 
 <!-- Owner Detailed Billing -->
 <div class="overflow-x-auto p-4 border rounded-lg bg-gray-50 shadow-sm">
-
   <table class="min-w-full table-auto border-collapse">
     <thead class="bg-gray-100">
       <tr>
         <th class="px-4 py-2 border">#</th>
-        <th class="px-4 py-2 border">Full Name</th>
+        <th class="px-4 py-2 border">Bldng #</th>
         <th class="px-4 py-2 border">Unit #</th>
         <th class="px-4 py-2 border">Billing Month</th>
         <th class="px-4 py-2 border">Due Date</th>
@@ -98,7 +99,7 @@
       <!-- Billing rows -->
       <tr *ngFor="let bill of billings; let i = index">
         <td class="border px-4 py-2 text-center">{{ i + 1 }}</td>
-        <td class="border px-4 py-2">{{ bill.FullName }}</td>
+        <td class="border px-4 py-2">{{ bill.BuildingNumber }}</td>
         <td class="border px-4 py-2">{{ bill.UnitNumber }}</td>
         <td class="border px-4 py-2 text-center">{{ bill.BillingMonth }}</td>
         <td class="border px-4 py-2 text-center">{{ bill.DueDate | date:'yyyy-MM-dd' }}</td>

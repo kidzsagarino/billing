@@ -15,8 +15,8 @@
       <a routerLink="/dashboard" class="px-4 py-2 hover:bg-gray-200 rounded" (click)="closeSidebar()">
         <span *ngIf="sidebarOpen">Dashboard</span>
       </a>
-      <a routerLink="/customers" class="px-4 py-2 hover:bg-gray-200 rounded" (click)="closeSidebar()">
-        <span *ngIf="sidebarOpen">Move-in Status</span>
+      <a routerLink="/moveins" class="px-4 py-2 hover:bg-gray-200 rounded" (click)="closeSidebar()">
+        <span *ngIf="sidebarOpen">Move-ins</span>
       </a>
       
       <a routerLink="/billing-run" class="px-4 py-2 hover:bg-gray-200 rounded" (click)="closeSidebar()">
@@ -24,6 +24,9 @@
       </a>
       <a routerLink="/payments" class="px-4 py-2 hover:bg-gray-200 rounded" (click)="closeSidebar()">
         <span *ngIf="sidebarOpen">Payments</span>
+      </a>
+       <a routerLink="/water-reading" class="px-4 py-2 hover:bg-gray-200 rounded" (click)="closeSidebar()">
+        <span *ngIf="sidebarOpen">Water Readings</span>
       </a>
     </nav>
   </aside>

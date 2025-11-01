@@ -1,6 +1,5 @@
 import { Model, DataTypes, InferAttributes, InferCreationAttributes, CreationOptional, HasManyGetAssociationsMixin } from 'sequelize';
 import { sequelize } from '../config/db';
-import { Billing } from './Billing';
 
 export class Unit extends Model<InferAttributes<Unit>, InferCreationAttributes<Unit>> {
   declare Id: string;

@@ -2,14 +2,25 @@ import Fastify, { FastifyInstance } from 'fastify';
 import cors from '@fastify/cors';
 import { sequelize } from './models'; // Import from models/index.ts
 import billingRoutes from './routes/billing.routes';
+import buildingRoutes from './routes/building.routes';
+import unitRoutes from './routes/unit.routes';
+import moveinRoutes from './routes/movein.routes';
+import waterReadingRoutes from './routes/water-reading.routes';
 
 const app: FastifyInstance = Fastify({ logger: true });
 
 // Enable CORS
-app.register(cors, { origin: '*' });
+app.register(cors, {
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+});
 
 // Register routes with API prefix
 app.register(billingRoutes, { prefix: '/api/billing' });
+app.register(buildingRoutes, { prefix: '/api/buildings' });
+app.register(unitRoutes, { prefix: '/api/units' });
+app.register(moveinRoutes, { prefix: '/api/moveins' });
+app.register(waterReadingRoutes, { prefix: '/api/water' });
 
 const start = async () => {
   try {

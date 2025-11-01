@@ -14,6 +14,7 @@ import { BillingRecord } from '../../models/billing.model';
 
 export interface Billing {
   FullName: string;
+  BuildingNumber: string;
   UnitNumber: string;
   BillingMonth: string;
   DueDate: string;
@@ -50,6 +51,7 @@ export class BillingRunComponent {
     // Dropdown selections
   selectedYear: number = 2025;
   selectedMonth: number = 10;
+  searchTerm: string = '';
 
   // Year and month arrays for dropdowns
   years: number[] = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i); // last 5 years
@@ -76,7 +78,7 @@ export class BillingRunComponent {
       next: (data: any) => {
         
         if(data.status == 0){
-          console.log('No records found');
+         this.billings = [];
         }
         else{
           this.billings = data.data;
@@ -86,6 +88,7 @@ export class BillingRunComponent {
         this.loading = false;
       },
       error: (err) => {
+        alert(err.message || 'Error loading billing data');
         console.error('Failed to load billing:', err);
         this.loading = false;
       }
@@ -95,14 +98,28 @@ export class BillingRunComponent {
     this.loading = true;
     this.billingService.generateBilling(this.billingMonthString).subscribe({
       next: (res: any) => {
-        console.log(res.message); // e.g., "Billing for 2025-10 generated."
-        // Reload table after generation
         this.loadBilling();
       },
       error: (err) => {
-        console.error('Failed to generate billing:', err);
+        alert(err.error);
         this.loading = false;
       }
     });
-  } 
+  }
+  search(): void {
+    
+    if (this.searchTerm.trim()) {
+      this.billingService.search(this.searchTerm).subscribe({
+        next: (data: any) => {
+          this.billings = data.data;
+        },
+        error: (err) => {
+          console.error('Error searching billing records:', err);
+        }
+      });
+    }
+    else{
+      this.loadBilling();
+    }
+  }
 }

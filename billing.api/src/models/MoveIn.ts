@@ -1,7 +1,6 @@
 import { Model, DataTypes, InferAttributes, InferCreationAttributes, CreationOptional, HasManyGetAssociationsMixin } from 'sequelize';
 
 import { sequelize } from '../config/db';
-import { Billing } from './Billing';
 
 export class MoveIn extends Model<
   InferAttributes<MoveIn>,

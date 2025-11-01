@@ -1,0 +1,205 @@
+<div class="p-6 bg-gray-50 min-h-screen">
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-4">
+    <h1 class="text-2xl font-bold text-gray-800">Water Readings</h1>
+    <button
+      (click)="openModal()"
+      class="bg-blue-600 text-white font-semibold rounded-md px-5 py-2 shadow-sm hover:shadow-md hover:bg-blue-700 transition"
+    >
+      + Add Reading
+    </button>
+  </div>
+
+  <!-- Filters -->
+  <div class="bg-white p-4 rounded-lg shadow-md flex flex-wrap gap-4 mb-6">
+    <div>
+      <label class="block text-sm font-semibold mb-1">Building</label>
+      <input placeholder="Bldg. #" value="303"
+           class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+    </div>
+
+    <div>
+      <label class="block text-sm font-semibold mb-1 w-48">Unit</label>
+      <input
+        type="text"
+        [(ngModel)]="searchUnit"
+        (ngModelChange)="onSearchChange()"
+        placeholder="Enter unit #"
+        class="border rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+      />
+    </div>
+<!-- 
+    <div class="flex-1 min-w-[160px]">
+      <label class="block text-sm font-semibold mb-1">Billing Month</label>
+      <input
+        type="month"
+        [(ngModel)]="billingMonth"
+        class="border rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+      />
+    </div> -->
+  </div>
+
+  <!-- Table -->
+  <div class="mt-8 bg-white rounded-lg shadow-md overflow-x-auto">
+    <table class="min-w-full border-collapse">
+      <thead class="bg-gray-100">
+        <tr class="text-left text-gray-700">
+          <th class="p-3 border-b">Building #</th>
+          <th class="p-3 border-b">Unit #</th>
+          <th class="p-3 border-b">Month</th>
+          <th class="p-3 border-b text-right">Previous</th>
+          <th class="p-3 border-b text-right">Current</th>
+          <th class="p-3 border-b text-right">Consumption</th>
+          <th class="p-3 border-b text-right">Total (₱)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let item of readings"
+          class="hover:bg-gray-50 transition"
+        >
+          <td class="p-3 border-b">{{ item.unit.building.BuildingNumber }}</td>
+          <td class="p-3 border-b">{{ item.unit.UnitNumber }}</td>
+          <td class="p-3 border-b">{{ item.BillingMonth }}</td>
+          <td class="p-3 border-b text-right">{{ item.PreviousReading }}</td>
+          <td class="p-3 border-b text-right">{{ item.CurrentReading }}</td>
+          <td class="p-3 border-b text-right">{{ item.Consumption }}</td>
+          <td class="p-3 border-b text-right font-semibold text-gray-800">{{ item.TotalAmount | number:'1.2-2' }}</td>
+        </tr>
+        <tr *ngIf="readings.length === 0">
+          <td colspan="7" class="text-center py-3 text-gray-500">No records found.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div class="flex justify-center gap-2 mt-4">
+    <button class="px-3 py-1 border rounded" [disabled]="page === 1" (click)="goToPage(page - 1)">Prev</button>
+    <span class="px-3 py-1">Page {{ page }} of {{ totalPages }}</span>
+    <button class="px-3 py-1 border rounded" [disabled]="page === totalPages" (click)="goToPage(page + 1)">Next</button>
+  </div>
+
+ <div
+    *ngIf="showModal"
+    class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
+  >
+    <div
+      class="bg-white w-full max-w-lg rounded-lg shadow-lg p-6 relative animate-fadeIn"
+    >
+      <!-- Close Button -->
+      <button
+        (click)="closeModal()"
+        class="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+      >
+        ✕
+      </button>
+
+      <h2 class="text-xl font-semibold text-gray-700 mb-4">
+        Add Water Reading
+      </h2>
+
+      <form (ngSubmit)="saveReading()" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+         <!-- Building Number -->
+        <div>
+            <input type="number" placeholder="Bldg. #"
+                [(ngModel)]="reading.buildingNumber" name="buildingNumber"
+                class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+        </div>
+
+        <!-- Unit Number -->
+        <div>
+            <input type="number" placeholder="Unit #"
+                [(ngModel)]="reading.unitNumber" name="unitNumber"
+                class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+        </div>
+         <!-- Billing Month -->
+        <div class="md:col-span-2">
+          <label class="block text-sm font-semibold mb-1">Reading date</label>
+          <input
+            type="date"
+            [(ngModel)]="reading.readingDate"
+            name="billingMonth"
+            class="border rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+        </div>
+        <!-- Previous Reading -->
+        <div>
+          <label class="block text-sm font-semibold mb-1">Previous Reading</label>
+          <input
+            type="number"
+            step="0.01"
+            [(ngModel)]="reading.previousReading"
+            name="previousReading"
+            class="border rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+        </div>
+
+        <!-- Current Reading -->
+        <div>
+          <label class="block text-sm font-semibold mb-1">Current Reading</label>
+          <input
+            type="number"
+            step="0.01"
+            [(ngModel)]="reading.currentReading"
+            name="currentReading"
+            (input)="computeConsumption()"
+            class="border rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+        </div>
+
+        <!-- Consumption -->
+        <div>
+          <label class="block text-sm font-semibold mb-1">Consumption (m³)</label>
+          <input
+            type="text"
+            [value]="reading.consumption"
+            readonly
+            class="border rounded-md px-3 py-2 w-full bg-gray-100 text-gray-700"
+          />
+        </div>
+
+        <!-- Rate -->
+        <div>
+          <label class="block text-sm font-semibold mb-1">Rate (₱/m³)</label>
+          <input
+            type="number"
+            step="0.01"
+            [(ngModel)]="reading.ratePerCubic"
+            name="ratePerCubic"
+            (input)="computeTotal()"
+            class="border rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+        </div>
+
+        <!-- Total -->
+        <div class="md:col-span-2">
+          <label class="block text-sm font-semibold mb-1">Total (₱)</label>
+          <input
+            type="text"
+            [value]="reading.totalAmount"
+            readonly
+            class="border rounded-md px-3 py-2 w-full bg-gray-100 text-gray-700"
+          />
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="md:col-span-2 flex justify-end mt-3 gap-3">
+          <button
+            type="button"
+            (click)="closeModal()"
+            class="border border-gray-400 text-gray-600 rounded-md px-5 py-2 hover:bg-gray-100 transition"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="bg-green-600 text-white font-semibold rounded-md px-6 py-2 shadow-sm hover:shadow-md hover:bg-green-700 transition"
+          >
+            Save
+          </button>
+        </div>
+      </form>
+    </div>
+</div>

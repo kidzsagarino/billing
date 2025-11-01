@@ -18,4 +18,9 @@ export class BillingService {
     generateBilling(month: string): Observable<any> {
         return this.http.post(`${this.apiUrl}/generate`, { billingMonth: month });
     }
+    search(term: string): Observable<any[]> {
+        return this.http.get<any[]>(`${this.apiUrl}/search`, {
+            params: { q: term },
+        });
+    }
 }

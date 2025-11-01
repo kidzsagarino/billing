@@ -3,6 +3,7 @@ import { Billing } from '../models/Billing';
 import { MoveIn } from '../models/MoveIn';
 import { Unit } from '../models/Unit';
 import { v4 as uuidv4 } from 'uuid';
+import WaterReading from '../models/WaterReading';
 
 
 export default async function billingRoutes(fastify: FastifyInstance) {
@@ -17,10 +18,8 @@ export default async function billingRoutes(fastify: FastifyInstance) {
         const dueDate = new Date(endOfMonth);
         dueDate.setDate(endOfMonth.getDate() + 7);
         
-
         const prevMonth = new Date(year, month - 2, 1);
         const prevMonthStr = `${prevMonth.getFullYear()}-${String(prevMonth.getMonth() + 1).padStart(2, '0')}`;
-
 
         // Fetch only active tenants with assigned UnitId
         const units: Unit[] = await Unit.findAll({
@@ -33,7 +32,17 @@ export default async function billingRoutes(fastify: FastifyInstance) {
         const bills: any[] = [];
 
          for (const unit of units) {
-        // ✅ Find last month's billing for this unit
+            const alreadyExists = await Billing.findOne({
+                where: {
+                    UnitId: unit.Id,
+                    BillingMonth: billingMonth,
+                },
+            });
+    
+            if(alreadyExists) {
+              continue;
+            }
+        
             const lastBill = await Billing.findOne({
                 where: {
                     UnitId: unit.Id,
@@ -51,7 +60,14 @@ export default async function billingRoutes(fastify: FastifyInstance) {
 
             // ✅ Compute total
             const condoDues = 2000.00;
-            const waterBill = 0.00;
+            const waterBill = await(WaterReading.findOne({
+                where: {
+                    UnitId: unit.Id,
+                    BillingMonth: billingMonth,
+                }
+            }).then(reading => {
+                return reading ? parseFloat(reading.TotalAmount.toString()) : 0.00;
+            }));
            
             const total = condoDues + waterBill + overdueAmount + penalty;
 
@@ -70,12 +86,15 @@ export default async function billingRoutes(fastify: FastifyInstance) {
                 Status: 'Unpaid',
             });
         }
-      // Insert all in one go
-      await Billing.bulkCreate(bills);
+        if(bills.length === 0) {
+          return reply.status(400).send(`Billing records for ${billingMonth} already generated.`);
+        }
+        // Insert all in one go
+        await Billing.bulkCreate(bills);
 
-      reply.send({
-        message: `${bills.length} billing records generated for ${billingMonth}.`,
-      });
+        reply.send({
+          message: `${bills.length} billing records generated for ${billingMonth}.`,
+        });
 
     } catch (error) {
       console.error('Error generating billing:', error);
@@ -91,12 +110,13 @@ export default async function billingRoutes(fastify: FastifyInstance) {
       if (!billingMonth) {
         return reply.status(400).send({ error: 'Billing month is required (format: YYYY-MM)' });
       }
-
+      
       // ✅ Query billing records for that month with tenant + unit details
       const bills = await Billing.findAll({
         where: { BillingMonth: billingMonth },
         include: [
-          { association: 'unit', required: false },
+          { association: 'unit', required: false, 
+            include: [ { association: 'building', required: false }] },
           { association: 'moveIn', required: false },
         ],
         order: [[{ model: Unit, as: 'unit' }, 'FloorNumber', 'ASC'],  [{ model: Unit, as: 'unit' }, 'UnitNumber', 'ASC']], // sort by floor
@@ -108,21 +128,22 @@ export default async function billingRoutes(fastify: FastifyInstance) {
 
       // ✅ Transform data for cleaner output
       const formatted = bills.map((bill: any) => ({
-      BillingId: bill.Id,
-      BillingMonth: bill.BillingMonth,
-      DueDate: bill.DueDate,
-      FullName: bill.moveIn?.FullName ?? 'Vacant',    // lowercase alias
-      Email: bill.moveIn?.Email ?? '',
-      Mobile: bill.moveIn?.Mobile ?? '',
-      UnitNumber: bill.unit?.UnitNumber ?? '',        // lowercase alias
-      CondoDues: bill.CondoDues,
-      WaterBill: bill.WaterBill,
-      OverdueAmount: bill.OverdueAmount,
-      Penalty: bill.Penalty,
-      TotalAmount: bill.TotalAmount,
-      PaidAmount: bill.PaidAmount,
-      Balance: bill.Balance,
-      Status: bill.Status,
+        BillingId: bill.Id,
+        BillingMonth: bill.BillingMonth,
+        DueDate: bill.DueDate,
+        FullName: bill.moveIn?.FullName ?? 'Vacant',    // lowercase alias
+        Email: bill.moveIn?.Email ?? '',
+        Mobile: bill.moveIn?.Mobile ?? '',
+        BuildingNumber: bill.unit?.building?.BuildingNumber ?? '', // lowercase alias
+        UnitNumber: bill.unit?.UnitNumber ?? '',        // lowercase alias
+        CondoDues: bill.CondoDues,
+        WaterBill: bill.WaterBill,
+        OverdueAmount: bill.OverdueAmount,
+        Penalty: bill.Penalty,
+        TotalAmount: bill.TotalAmount,
+        PaidAmount: bill.PaidAmount,
+        Balance: bill.Balance,
+        Status: bill.Status
     }));
 
     reply.send({
@@ -136,4 +157,53 @@ export default async function billingRoutes(fastify: FastifyInstance) {
       reply.status(500).send({ error: 'Failed to fetch billing records.' });
     }
   });
+
+  fastify.get('/search', async (request, reply) => {
+    try {
+      const { q } = request.query as { q?: string };
+      
+      // ✅ Query billing records for that month with tenant + unit details
+      const bills = await Billing.findAll({
+        include: [
+          { association: 'unit', required: true, include: [ { association: 'building', required: false } ],
+          where: {
+            UnitNumber: q.trim()
+          }
+         },
+          { association: 'moveIn', required: false },
+        ],
+        order: [[{ model: Unit, as: 'unit' }, 'FloorNumber', 'ASC'],  [{ model: Unit, as: 'unit' }, 'UnitNumber', 'ASC']], // sort by floor
+      });
+
+      // ✅ Transform data for cleaner output
+      const formatted = bills.map((bill: any) => ({
+        BillingId: bill.Id,
+        BillingMonth: bill.BillingMonth,
+        DueDate: bill.DueDate,
+        FullName: bill.moveIn?.FullName ?? 'Vacant',    // lowercase alias
+        Email: bill.moveIn?.Email ?? '',
+        Mobile: bill.moveIn?.Mobile ?? '',
+        BuildingNumber: bill.unit?.building?.BuildingNumber ?? '', // lowercase alias
+        UnitNumber: bill.unit?.UnitNumber ?? '',        // lowercase alias
+        CondoDues: bill.CondoDues,
+        WaterBill: bill.WaterBill,
+        OverdueAmount: bill.OverdueAmount,
+        Penalty: bill.Penalty,
+        TotalAmount: bill.TotalAmount,
+        PaidAmount: bill.PaidAmount,
+        Balance: bill.Balance,
+        Status: bill.Status
+    }));
+
+    reply.send({
+      totalRecords: formatted.length,
+      data: formatted,
+    });
+
+    } catch (error) {
+      console.error('Error fetching billing records:', error);
+      reply.status(500).send({ error: 'Failed to fetch billing records.' });
+    }
+  });
+
 }
