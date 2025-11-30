@@ -1,45 +1,256 @@
-<div class="">
-    <h2 class="text-xl font-bold mb-4">Payments Table</h2>
+<div class="p-6 bg-gray-50 min-h-screen">
+  <div class="flex items-center justify-between mb-4">
+    <h1 class="text-2xl font-bold text-gray-800">Payments</h1>
+    <button
+      (click)="openModal()"
+      class="bg-blue-600 text-white font-semibold rounded-md px-5 py-2 shadow-sm hover:shadow-md hover:bg-blue-700 transition"
+    >
+      + Add Payment
+    </button>
+  </div>
+  <!-- MODAL OVERLAY -->
+  <div 
+    *ngIf="showModal"
+    class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4"
+  >
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
+      <h2 class="text-xl font-bold mb-4">{{ isEditing ? 'Update Payment' : 'Add Payment' }}</h2>
 
-    <!-- Upload Button -->
-    <div class="mb-4">
-      <label class="block">
-        <span class="sr-only">Choose file</span>
-        <input type="file" class="block w-full text-sm text-gray-500
-          file:mr-4 file:py-2 file:px-4
-          file:rounded-full file:border-0
-          file:text-sm file:font-semibold
-          file:bg-blue-100 file:text-blue-700
-          hover:file:bg-blue-200
-        ">
-      </label>
+      <form (ngSubmit)=" isEditing ? updatePayment() : submitPayment()" #paymentForm="ngForm" class="space-y-4">
+        
+        <!-- Year Dropdown -->
+        <div class="grid grid-cols-2 gap-2">
+          <label class="w-full block font-medium mb-1">Year & Month</label>
+          <div class="grid grid-cols-2 gap-2">
+            <select 
+            name="billingYear"
+            class="w-50 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            [(ngModel)]="payment.BillingYear"
+            >
+            <option *ngFor="let y of years" [value]="y">{{ y }}</option>
+          </select>
+          <select 
+            name="billingMonth"
+            class="w-50 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            [(ngModel)]="payment.BillingMonth">
+            <option *ngFor="let m of months" [value]="m">{{ m }}</option>
+          </select>
+          </div>
+        </div>
+
+        <!-- Unit -->
+        <div class="grid grid-cols-2 gap-2">
+          <label class="w-full block font-medium mb-1" for="building">Building</label>
+          <input 
+            type="text"
+            name="building"
+            value="303"
+            readonly
+            class="w-full border border-gray-300 rounded-lg p-2 focus:ring focus:ring-blue-200"
+          />
+        </div>
+        <!-- Unit -->
+        <div class="grid grid-cols-2 gap-2">
+          <label class="w-full block font-medium mb-1" for="unit">Unit</label>
+          <input 
+            type="text"
+            name="unit"
+            [(ngModel)]="payment.UnitNumber"
+            (ngModelChange)="searchMoveinNameInUnit()"
+            required
+            class="w-full border border-gray-300 rounded-lg p-2 focus:ring focus:ring-blue-200"
+          />
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <label class="w-full block font-medium mb-1" for="moveIn">Movein Name</label>
+          <input 
+            type="text"
+            name="movein"
+            value="303"
+            [(ngModel)]="moveInName"
+            readonly
+            class="w-full border border-gray-300 rounded-lg p-2 focus:ring focus:ring-blue-200"
+          />
+        </div>
+        <!-- Payee
+        <div>
+          <label class="block font-medium mb-1">Payee</label>
+          <input 
+            type="text"
+            name="payee"
+            [(ngModel)]="payment.payee"
+            required
+            class="w-full border border-gray-300 rounded-lg p-2 focus:ring focus:ring-blue-200"
+          />
+        </div> -->
+
+        <div class="grid grid-cols-2 gap-2">
+          <label class="w-full block font-medium mb-1" for="date">Payment Date</label>
+          <input
+            type="date"
+            [(ngModel)]="payment.PaymentDate"
+            name="date"
+            required
+            class="border rounded-lg px-3 py-2 w-full"
+          />
+        </div>
+        <!-- Amount -->
+        <div class="grid grid-cols-2 gap-2">
+          <label class="w-full block font-medium mb-1" for="amount">Amount</label>
+          <input 
+            type="number"
+            name="amount"
+            [(ngModel)]="payment.Amount"
+            required
+            class="w-full border border-gray-300 rounded-lg p-2 focus:ring focus:ring-blue-200"
+          />
+        </div>
+
+        <!-- AR Number -->
+        <div class="grid grid-cols-2 gap-2">
+          <label class="w-full block font-medium mb-1" for="arNumber">AR #</label>
+          <input 
+            type="text"
+            name="arNumber"
+            [(ngModel)]="payment.ARNumber"
+            class="w-full border border-gray-300 rounded-lg p-2 focus:ring focus:ring-blue-200"
+          />
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <label class="w-full block font-medium mb-1" for="paymentType">Payment Type</label>
+          <select 
+            class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            [(ngModel)]="payment.PaymentType"
+            name="paymentType"
+          >
+            <option *ngFor="let paymentType of paymentTypes" [value]="paymentType.value">{{ paymentType.label }}</option>
+          </select>
+        </div>
+        <!-- Ref Number -->
+        <div class="grid grid-cols-2 gap-2">
+          <label class="w-full block font-medium mb-1">Ref #</label>
+          <input 
+            type="text"
+            name="refNumber"
+            [(ngModel)]="payment.RefNumber"
+            class="w-full border border-gray-300 rounded-lg p-2 focus:ring focus:ring-blue-200"
+          />
+        </div>
+
+        <!-- BUTTONS -->
+        <div class="flex justify-end gap-2 pt-4">
+          <button 
+            type="button" 
+            (click)="closeModal()" 
+            class="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400 transition">
+            Cancel
+          </button>
+
+        <button 
+          type="submit"
+          class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-400 transition">
+           {{ isEditing ? 'Update': 'Save' }}
+        </button>
+        </div>
+      </form>
     </div>
+  </div>
 
-    <!-- Table -->
-    <div class="overflow-x-auto">
+  <div class="flex flex-wrap gap-4">
+  <!-- Building -->
+  <div class="flex-1 min-w-[200px] flex flex-col">
+    <label class="block text-sm font-semibold mb-1">Building</label>
+    <input 
+      placeholder="Bldg. #" 
+      value="303"
+      class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+    />
+  </div>
+
+  <!-- Unit -->
+  <div class="flex-1 min-w-[200px] flex flex-col">
+    <label class="block text-sm font-semibold mb-1">Unit</label>
+    <input
+      type="text"
+      [(ngModel)]="searchUnit"
+      (ngModelChange)="onSearchChange()"
+      placeholder="Enter unit #"
+      class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+    />
+  </div>
+
+  <!-- Year Dropdown -->
+  <div class="flex-1 min-w-[200px] flex flex-col">
+    <label class="block text-sm font-semibold mb-1">Year</label>
+    <select 
+      class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+      [(ngModel)]="selectedYear"
+      (ngModelChange)="loadPayments()"
+    >
+      <option *ngFor="let y of years" [value]="y">{{ y }}</option>
+    </select>
+  </div>
+
+  <!-- Month Dropdown -->
+  <div class="flex-1 min-w-[200px] flex flex-col">
+    <label class="block text-sm font-semibold mb-1">Month</label>
+    <select 
+      class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+      [(ngModel)]="selectedMonth"
+      (ngModelChange)="loadPayments()"
+    >
+      <option *ngFor="let m of months" [value]="m">{{ m }}</option>
+    </select>
+  </div>
+</div>
+  <!-- PAYMENTS TABLE -->
+  <div class="">
+    <!-- TABLE WRAPPER -->
+    <div class="overflow-x-auto rounded-lg shadow">
       <table class="min-w-full bg-white border border-gray-200">
         <thead>
-          <tr class="bg-gray-200 text-left">
+          <tr class="bg-gray-100 text-left text-gray-700">
             <th class="py-2 px-4 border-b">Bldng</th>
             <th class="py-2 px-4 border-b">Unit</th>
+            <th class="py-2 px-4 border-b">Billing Month</th>
+            <th class="py-2 px-4 border-b">Owner</th>
             <th class="py-2 px-4 border-b">Date</th>
             <th class="py-2 px-4 border-b">Amount</th>
-            <th class="py-2 px-4 border-b">AR#</th>
-            <th class="py-2 px-4 border-b">Payment Mode</th>
+            <th class="py-2 px-4 border-b">AR #</th>
+            <th class="py-2 px-4 border-b">Payment Type</th>
+            <th class="py-2 px-4 border-b">Ref #</th>
+            <th class="py-2 px-4 border-b">Actions</th>
+            
           </tr>
         </thead>
         <tbody>
-          <tr><td class="py-2 px-4 border-b">301</td><td class="py-2 px-4 border-b">101</td><td class="py-2 px-4 border-b">2025-09-01</td><td class="py-2 px-4 border-b">₱5,000</td><td class="py-2 px-4 border-b">AR001</td><td class="py-2 px-4 border-b">Cash</td></tr>
-          <tr><td class="py-2 px-4 border-b">301</td><td class="py-2 px-4 border-b">102</td><td class="py-2 px-4 border-b">2025-09-02</td><td class="py-2 px-4 border-b">₱6,200</td><td class="py-2 px-4 border-b">AR002</td><td class="py-2 px-4 border-b">GCash</td></tr>
-          <tr><td class="py-2 px-4 border-b">301</td><td class="py-2 px-4 border-b">103</td><td class="py-2 px-4 border-b">2025-09-03</td><td class="py-2 px-4 border-b">₱4,500</td><td class="py-2 px-4 border-b">AR003</td><td class="py-2 px-4 border-b">Bank Transfer</td></tr>
-          <tr><td class="py-2 px-4 border-b">301</td><td class="py-2 px-4 border-b">104</td><td class="py-2 px-4 border-b">2025-09-04</td><td class="py-2 px-4 border-b">₱5,300</td><td class="py-2 px-4 border-b">AR004</td><td class="py-2 px-4 border-b">Cash</td></tr>
-          <tr><td class="py-2 px-4 border-b">301</td><td class="py-2 px-4 border-b">105</td><td class="py-2 px-4 border-b">2025-09-05</td><td class="py-2 px-4 border-b">₱7,000</td><td class="py-2 px-4 border-b">AR005</td><td class="py-2 px-4 border-b">GCash</td></tr>
-          <tr><td class="py-2 px-4 border-b">301</td><td class="py-2 px-4 border-b">106</td><td class="py-2 px-4 border-b">2025-09-06</td><td class="py-2 px-4 border-b">₱5,800</td><td class="py-2 px-4 border-b">AR006</td><td class="py-2 px-4 border-b">Bank Transfer</td></tr>
-          <tr><td class="py-2 px-4 border-b">301</td><td class="py-2 px-4 border-b">107</td><td class="py-2 px-4 border-b">2025-09-07</td><td class="py-2 px-4 border-b">₱6,500</td><td class="py-2 px-4 border-b">AR007</td><td class="py-2 px-4 border-b">Cash</td></tr>
-          <tr><td class="py-2 px-4 border-b">301</td><td class="py-2 px-4 border-b">108</td><td class="py-2 px-4 border-b">2025-09-08</td><td class="py-2 px-4 border-b">₱7,200</td><td class="py-2 px-4 border-b">AR008</td><td class="py-2 px-4 border-b">GCash</td></tr>
-          <tr><td class="py-2 px-4 border-b">301</td><td class="py-2 px-4 border-b">109</td><td class="py-2 px-4 border-b">2025-09-09</td><td class="py-2 px-4 border-b">₱4,900</td><td class="py-2 px-4 border-b">AR009</td><td class="py-2 px-4 border-b">Bank Transfer</td></tr>
-          <tr><td class="py-2 px-4 border-b">301</td><td class="py-2 px-4 border-b">110</td><td class="py-2 px-4 border-b">2025-09-10</td><td class="py-2 px-4 border-b">₱5,100</td><td class="py-2 px-4 border-b">AR010</td><td class="py-2 px-4 border-b">Cash</td></tr>
+          <tr *ngIf="payments.length === 0">
+              <td colspan="7" 
+                  class="py-4 px-4 text-center text-gray-500 border-b">
+                No payments found.
+            </td>
+          </tr>
+          <tr class="hover:bg-gray-50 transition" *ngFor="let payment of payments">
+            <td class="py-2 px-4 border-b">303</td>
+            <td class="py-2 px-4 border-b">{{ payment.unit.UnitNumber }}</td>
+            <td class="py-2 px-4 border-b">{{ payment.BillingMonth }}</td>
+            <td class="py-2 px-4 border-b">{{ payment.unit.moveins[0].FullName }}</td>
+            <td class="py-2 px-4 border-b">{{ payment.PaymentDate }}</td>
+            <td class="py-2 px-4 border-b">₱{{ payment.Amount }}</td>
+            <td class="py-2 px-4 border-b">{{ payment.ARNumber }}</td>
+            <td class="py-2 px-4 border-b">{{ payment.PaymentType}}</td>
+            <td class="py-2 px-4 border-b">{{ payment.RefNumber }}</td>
+            <td class="py-2 px-4 text-center">
+              <button
+                class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition"
+                (click)="editPayment(payment)"
+              >
+              ✏️ Update
+            </button>
+          </td>
+          </tr>
         </tbody>
       </table>
     </div>
   </div>
+</div>

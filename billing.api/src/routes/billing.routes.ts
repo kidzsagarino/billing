@@ -4,6 +4,7 @@ import { MoveIn } from '../models/MoveIn';
 import { Unit } from '../models/Unit';
 import { v4 as uuidv4 } from 'uuid';
 import WaterReading from '../models/WaterReading';
+import { parse } from 'path';
 
 
 export default async function billingRoutes(fastify: FastifyInstance) {
@@ -51,6 +52,13 @@ export default async function billingRoutes(fastify: FastifyInstance) {
                 order: [['CreatedAt', 'DESC']],
             });
 
+            const lastWaterReading = await WaterReading.findOne({
+                where: {
+                    UnitId: unit.Id,
+                    BillingMonth: prevMonthStr,
+                }
+            }) || { Consumption: 0 };
+
             let penalty = 0.00;
             let overdueAmount = 0;
             if (lastBill && (lastBill.Status === 'Unpaid' || lastBill.Status === 'PartiallyPaid')) {
@@ -60,15 +68,16 @@ export default async function billingRoutes(fastify: FastifyInstance) {
 
             // ✅ Compute total
             const condoDues = 2000.00;
-            const waterBill = await(WaterReading.findOne({
+            const currentReading = await WaterReading.findOne({
                 where: {
                     UnitId: unit.Id,
                     BillingMonth: billingMonth,
                 }
-            }).then(reading => {
-                return reading ? parseFloat(reading.TotalAmount.toString()) : 0.00;
-            }));
-           
+            }) || { Consumption: 0 };
+            
+            const consumption = (parseFloat(currentReading.Consumption.toString()) - parseFloat(lastWaterReading.Consumption.toString()))
+            const waterBill = consumption > 2 ? consumption * 82.50 : 165.00;
+
             const total = condoDues + waterBill + overdueAmount + penalty;
 
             bills.push({

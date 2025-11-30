@@ -4,6 +4,7 @@ import { findUnitId } from '../service/findUnitId';
 import { Building } from '../models/Building';
 import { Unit } from '../models/Unit';
 import { dateMonth } from '../service/dateMonth';
+import { where } from 'sequelize';
 
 
 interface WaterReadingBody {
@@ -60,6 +61,45 @@ export default async function waterReadingRoutes(fastify: FastifyInstance) {
         }
     });
 
+    fastify.get('/water-readings/:billingMonth', async (request, reply) => {
+        try {
+            
+            const billingMonth = (request.params as any).billingMonth;
+            // Fetch paginated readings
+            const { count, rows } = await WaterReading.findAndCountAll({
+                where: {
+                    BillingMonth: billingMonth
+                },
+                include: [
+                    { model: Unit, as: 'unit', attributes: ['UnitNumber'],
+                        include: [
+                            {
+                                model: Building,
+                                as: 'building',       // alias used in association
+                                attributes: ['BuildingNumber'],
+                            },
+                        ],
+                        
+                    },
+                  
+                ],
+            
+                order:[
+                    [{ model: Unit, as: 'unit' }, 'UnitNumber', 'ASC'] // 👈 sort by UnitNumber
+                ], // optional ordering
+            });
+
+            reply.send({
+           
+            totalRecords: count,
+            data: rows,
+            });
+        } catch (err) {
+            console.error(err);
+            reply.status(500).send({ error: 'Failed to fetch water readings' });
+        }
+    });
+
     // SEARCH water readings by unit number or building number
     fastify.get('/water-readings/search', async (request, reply) => {
         const { q } = request.query as { q?: string };
@@ -100,53 +140,53 @@ export default async function waterReadingRoutes(fastify: FastifyInstance) {
         reply.send(result);
     });
 
-  // 🔹 Get by billing month
-  fastify.get('/water-readings/:billingMonth', async (request, reply) => {
-    const { billingMonth } = request.params as { billingMonth: string };
-    const readings = await WaterReading.findAll({ where: { BillingMonth: billingMonth } });
-    reply.send(readings);
-  });
+    // // 🔹 Get by billing month
+    // fastify.get('/water-readings/:billingMonth', async (request, reply) => {
+    //     const { billingMonth } = request.params as { billingMonth: string };
+    //     const readings = await WaterReading.findAll({ where: { BillingMonth: billingMonth } });
+    //     reply.send(readings);
+    // });
 
-  // 🔹 Create new water reading
-  fastify.post('/water-readings', async (request, reply) => {
-    try {
-        const body = request.body as WaterReadingBody;
+    // 🔹 Create new water reading
+    fastify.post('/water-readings', async (request, reply) => {
+        try {
+            const body = request.body as WaterReadingBody;
 
-        const unitId = await findUnitId(body.buildingNumber, body.unitNumber);
+            const unitId = await findUnitId(body.buildingNumber, body.unitNumber);
 
-        const alreadyExists = await WaterReading.findOne({
-            where: {
+            const alreadyExists = await WaterReading.findOne({
+                where: {
+                    UnitId: unitId,
+                    BillingMonth: body.billingMonth,
+                },
+            });
+
+            if (alreadyExists) {
+                return reply.status(400).send({ error: 'Water reading for this unit and billing month already exists' });
+            }
+
+            if (!unitId) {
+                return reply.status(400).send({ error: 'Invalid building or unit number' });
+            }
+            
+            const newReading = await WaterReading.create({
                 UnitId: unitId,
                 BillingMonth: body.billingMonth,
-            },
-        });
+                PreviousReading: body.previousReading,
+                CurrentReading: body.currentReading,
+                Consumption: Math.max(0, body.currentReading - body.previousReading),
+                RatePerCubic: body.ratePerCubic,
+                TotalAmount: body.totalAmount,
+                ReadingDate: body.readingDate,
+            });
 
-        if (alreadyExists) {
-            return reply.status(400).send({ error: 'Water reading for this unit and billing month already exists' });
+            reply.status(200).send({ message: 'Water reading saved successfully', data: newReading });
+
+        } catch (err) {
+            console.error(err);
+            reply.status(500).send({ error: 'Failed to save water reading' });
         }
-
-        if (!unitId) {
-            return reply.status(400).send({ error: 'Invalid building or unit number' });
-        }
-        
-        const newReading = await WaterReading.create({
-            UnitId: unitId,
-            BillingMonth: body.billingMonth,
-            PreviousReading: body.previousReading,
-            CurrentReading: body.currentReading,
-            Consumption: Math.max(0, body.currentReading - body.previousReading),
-            RatePerCubic: body.ratePerCubic,
-            TotalAmount: body.totalAmount,
-            ReadingDate: body.readingDate,
-        });
-
-        reply.status(200).send({ message: 'Water reading saved successfully', data: newReading });
-
-    } catch (err) {
-        console.error(err);
-        reply.status(500).send({ error: 'Failed to save water reading' });
-    }
-  });
+    });
 
   // 🔹 Update existing water reading
   fastify.put('/water-readings/:id', async (request, reply) => {
@@ -176,4 +216,71 @@ export default async function waterReadingRoutes(fastify: FastifyInstance) {
       reply.status(500).send({ error: 'Failed to update water reading' });
     }
   });
+
+  fastify.post('/water-readings/loadForBillingMonth', async (request, reply) => {
+    try {
+        const { billingMonth } = request.body as { billingMonth: string };    
+
+            const allUnits = await Unit.findAll();
+            const newReadings = [];
+            
+            for (const unit of allUnits) {
+
+                const existingReading = await WaterReading.findOne({
+                    where: {
+                        UnitId: unit.Id,
+                        BillingMonth: billingMonth,
+                    },
+                });
+
+                if (existingReading) {
+                    continue; // Skip if reading already exists for this unit and month
+                }
+
+                newReadings.push({
+                    UnitId: unit.Id,
+                    BillingMonth: billingMonth,
+                    Consumption: 0,
+                    PreviousReading: 0,
+                    CurrentReading: 0,
+                    ratePerCubic: 0,
+                    TotalAmount: 0,
+                });
+            }
+
+            if (newReadings.length > 0) {
+                await WaterReading.bulkCreate(newReadings);
+                reply.send({ message: 'Water readings loaded for billing month successfully' });
+            }
+            else {
+                reply.status(400).send({ message: 'All water readings for this billing month already exist' });   
+            }
+
+        } catch (err) {
+            console.error(err);
+            reply.status(500).send({ error: 'Failed to load water readings for billing month' });
+        }
+    });
+
+
+    fastify.put('/water-readings/updateConsumption/:id', async (request, reply) => {
+        try {
+            const { id } = request.params as { id: string };
+            const { Consumption } = request.body as { Consumption: number };    
+            const reading = await WaterReading.findByPk(id);
+            console.log(reading, Consumption);
+            if (!reading) {
+                return reply.status(404).send({ error: 'Water reading not found' });
+            }
+            await reading.update({ Consumption });
+            reply.send({ message: 'Consumption updated successfully' });
+        }
+
+        catch (err) {
+            console.error(err);
+            reply.status(500).send({ error: 'Failed to update consumption' });
+        }
+
+    });
+
 }

@@ -11,7 +11,7 @@
   </div>
 
   <!-- Filters -->
-  <div class="bg-white p-4 rounded-lg shadow-md flex flex-wrap gap-4 mb-6">
+  <div class="bg-white p-4 rounded-lg shadow-md flex flex-wrap gap-5 mb-6">
     <div>
       <label class="block text-sm font-semibold mb-1">Building</label>
       <input placeholder="Bldg. #" value="303"
@@ -27,6 +27,36 @@
         placeholder="Enter unit #"
         class="border rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
       />
+    </div>
+    <!-- Year Dropdown -->
+    <div class="flex-1 min-w-[140px] flex flex-col">
+      <label class="block text-sm font-semibold mb-1 w-48">Year</label>
+      <select 
+        class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        [(ngModel)]="selectedYear"
+        (ngModelChange)="loadReadings()"
+        >
+        <option *ngFor="let y of years" [value]="y">{{ y }}</option>
+      </select>
+    </div>
+
+    <!-- Month Dropdown -->
+    <div class="flex-1 min-w-[140px] flex flex-col">
+      <label class="block text-sm font-semibold mb-1 w-48">Month</label>
+      <select 
+        class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        [(ngModel)]="selectedMonth"
+        (ngModelChange)="loadReadings()">
+        <option *ngFor="let m of months" [value]="m">{{ m }}</option>
+      </select>
+    </div>
+    <div class="flex-1 min-w-[140px] flex flex-col">
+      <button 
+        class="bg-blue-600 text-white font-semibold rounded-md px-5 py-2 shadow-sm hover:shadow-md hover:bg-blue-700 transition"
+        (click)="loadReadingForBillingMonth()"
+        >
+        Load
+      </button>
     </div>
 <!-- 
     <div class="flex-1 min-w-[160px]">
@@ -46,25 +76,35 @@
         <tr class="text-left text-gray-700">
           <th class="p-3 border-b">Building #</th>
           <th class="p-3 border-b">Unit #</th>
-          <th class="p-3 border-b">Month</th>
-          <th class="p-3 border-b text-right">Previous</th>
-          <th class="p-3 border-b text-right">Current</th>
-          <th class="p-3 border-b text-right">Consumption</th>
-          <th class="p-3 border-b text-right">Total (₱)</th>
+          <th class="p-3 border-b">Month</th> 
+          <th class="p-3 border-b text-right">Reading</th>
         </tr>
       </thead>
       <tbody>
         <tr
-          *ngFor="let item of readings"
+          *ngFor="let item of readings; let i = index"
           class="hover:bg-gray-50 transition"
         >
           <td class="p-3 border-b">{{ item.unit.building.BuildingNumber }}</td>
           <td class="p-3 border-b">{{ item.unit.UnitNumber }}</td>
           <td class="p-3 border-b">{{ item.BillingMonth }}</td>
-          <td class="p-3 border-b text-right">{{ item.PreviousReading }}</td>
-          <td class="p-3 border-b text-right">{{ item.CurrentReading }}</td>
-          <td class="p-3 border-b text-right">{{ item.Consumption }}</td>
-          <td class="p-3 border-b text-right font-semibold text-gray-800">{{ item.TotalAmount | number:'1.2-2' }}</td>
+         <td class="p-3 border-b text-right" (click)="startEdit(i, item.Consumption)">
+            <ng-container *ngIf="!isEditing(i); else editInput">
+              {{ item.Consumption }}
+            </ng-container>
+
+            <ng-template #editInput>
+              <input
+                type="number"
+                class="border rounded px-2 py-1 w-24 text-right"
+                [(ngModel)]="editValue"
+                (blur)="finishEdit(i)"
+                (keydown)="onKeydown($event, i)"
+                (focus)="selectText($event)" 
+              />
+            </ng-template>
+          </td>
+          
         </tr>
         <tr *ngIf="readings.length === 0">
           <td colspan="7" class="text-center py-3 text-gray-500">No records found.</td>
@@ -74,11 +114,11 @@
   </div>
 
   <!-- Pagination -->
-  <div class="flex justify-center gap-2 mt-4">
+  <!-- <div class="flex justify-center gap-2 mt-4">
     <button class="px-3 py-1 border rounded" [disabled]="page === 1" (click)="goToPage(page - 1)">Prev</button>
     <span class="px-3 py-1">Page {{ page }} of {{ totalPages }}</span>
     <button class="px-3 py-1 border rounded" [disabled]="page === totalPages" (click)="goToPage(page + 1)">Next</button>
-  </div>
+  </div> -->
 
  <div
     *ngIf="showModal"

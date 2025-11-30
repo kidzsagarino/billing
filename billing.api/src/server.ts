@@ -6,6 +6,7 @@ import buildingRoutes from './routes/building.routes';
 import unitRoutes from './routes/unit.routes';
 import moveinRoutes from './routes/movein.routes';
 import waterReadingRoutes from './routes/water-reading.routes';
+import paymentRoutes from './routes/payment.routes';
 
 const app: FastifyInstance = Fastify({ logger: true });
 
@@ -21,6 +22,7 @@ app.register(buildingRoutes, { prefix: '/api/buildings' });
 app.register(unitRoutes, { prefix: '/api/units' });
 app.register(moveinRoutes, { prefix: '/api/moveins' });
 app.register(waterReadingRoutes, { prefix: '/api/water' });
+app.register(paymentRoutes, { prefix: '/api/payments' });
 
 const start = async () => {
   try {

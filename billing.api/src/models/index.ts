@@ -4,6 +4,7 @@ import { MoveIn } from './MoveIn';
 import { Billing } from './Billing';
 import { Building } from './Building';
 import WaterReading from './WaterReading';
+import { Payment } from './Payment';
 
 // Ensure associations exist
 Unit.hasMany(Billing, { foreignKey: 'UnitId', as: 'billings' });
@@ -22,4 +23,7 @@ MoveIn.belongsTo(Unit, { foreignKey: 'UnitId', as: 'unit' });
 Unit.hasMany(WaterReading, { foreignKey: 'UnitId', as: 'unit' });
 WaterReading.belongsTo(Unit, { foreignKey: 'UnitId', as: 'unit' });
 
-export { sequelize, Unit, MoveIn, Billing, Building };
+Unit.hasMany(Payment, { foreignKey: 'UnitId', as: 'payments' });
+Payment.belongsTo(Unit, { foreignKey: 'UnitId', as: 'unit' });
+
+export { sequelize, Unit, MoveIn, Billing, WaterReading, Building, Payment };

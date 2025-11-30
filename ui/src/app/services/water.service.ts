@@ -11,7 +11,7 @@ export class WaterService {
   constructor(private http: HttpClient) {}
 
   getReadings(billingMonth: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}?month=${billingMonth}`);
+    return this.http.get<any[]>(`${this.apiUrl}/water-readings/${billingMonth}`);
   }
   getAllReadings(pageNumber:number, pageSize: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/water-readings`);
@@ -19,5 +19,12 @@ export class WaterService {
 
   saveReading(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/water-readings`, data);
+  }
+  saveReadingForBillingMonth(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/water-readings/loadForBillingMonth`, data);
+  }
+
+  updateReading(id: string, data: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/water-readings/updateConsumption/${id}`, data);
   }
 }

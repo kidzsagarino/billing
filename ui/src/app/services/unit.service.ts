@@ -32,4 +32,8 @@ export class UnitService {
   deleteUnit(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
+
+  getMoveInNameByUnit(unitNumber: string): Observable<any> {
+        return this.http.get<any>(`${this.apiUrl}/getMoveinName?unitNumber=${unitNumber}`);
+  }
 }

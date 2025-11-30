@@ -19,6 +19,12 @@ export class WaterReadingComponent {
   filteredUnits: any[] = [];
   selectedBuilding = '';
 
+  selectedYear: number = 2025;
+  selectedMonth: number = 10;
+  // Year and month arrays for dropdowns
+  years: number[] = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i); // last 5 years
+  months: number[] = Array.from({ length: 12 }, (_, i) => i + 1);
+
   reading: any = {
     buildingNumber: '',
     unitNumber: '',
@@ -39,7 +45,9 @@ export class WaterReadingComponent {
   pageSize = 10;
   total = 0;
 
-  isEditing = false;
+  editingIndex: number | null = null;
+  editValue: number | null = null;
+  originalValue: number | null = null;
 
   constructor(
     private waterService: WaterService,
@@ -71,7 +79,8 @@ export class WaterReadingComponent {
 
   /** 🔹 Load water readings from API with pagination & filters */
   loadReadings() {
-    this.waterService.getAllReadings(this.page, this.pageSize).subscribe({
+    const billingMonth = `${this.selectedYear}-${this.selectedMonth.toString().padStart(2,'0')}`;
+    this.waterService.getReadings(billingMonth).subscribe({
       next: (res: any) => {
         // Filter by building, unit, and billingMonth
         
@@ -83,25 +92,25 @@ export class WaterReadingComponent {
     });
   }
 
-  /** 🔹 Open add/edit modal */
+  // /** 🔹 Open add/edit modal */
   openModal(reading?: any) {
-    if (reading) {
-      this.reading = { ...reading };
-      this.isEditing = true;
-    } else {
-      this.reading = {
-        buildingNumber: '',
-        unitNumber: '',
-        readingDate: '',
-        previousReading: 0,
-        currentReading: 0,
-        consumption: 0,
-        ratePerCubic: 0,
-        totalAmount: 0
-      };
-      this.isEditing = false;
-    }
-    this.showModal = true;
+    // if (reading) {
+    //   this.reading = { ...reading };
+    //   this.isEditing = true;
+    // } else {
+    //   this.reading = {
+    //     buildingNumber: '',
+    //     unitNumber: '',
+    //     readingDate: '',
+    //     previousReading: 0,
+    //     currentReading: 0,
+    //     consumption: 0,
+    //     ratePerCubic: 0,
+    //     totalAmount: 0
+    //   };
+    //   this.isEditing = false;
+    // }
+    // this.showModal = true;
   }
 
   closeModal() {
@@ -195,5 +204,78 @@ export class WaterReadingComponent {
     // } else {
     //   this.loadMoveIns();
     // }
+  }
+
+  loadReadingForBillingMonth(){
+    this.waterService.saveReadingForBillingMonth({
+      billingMonth: `${this.selectedYear}-${this.selectedMonth.toString().padStart(2,'0')}`
+    }).subscribe({
+      next: () => { 
+        this.loadReadings();
+      }
+      ,
+      error: (err) => {
+        console.error('Error loading readings for billing month:', err);
+        alert(err.error.message || '❌ Failed to load readings for billing month.');
+      }
+    });
+  }
+
+  startEdit(index: number, currentValue: number) {
+    this.editingIndex = index;
+    this.editValue = currentValue;
+    this.originalValue = currentValue;
+  }
+    
+  isEditing(index: number) {
+    return this.editingIndex === index;
+  }
+
+  finishEdit(index: number) {
+    if (this.editValue === this.originalValue) {
+      this.cancelEdit();
+      return;
+    }
+
+    const reading = this.readings[index];
+    reading.Consumption = this.editValue;
+
+    this.updateConsumption(reading.Id, this.editValue ?? 0);
+
+    this.cancelEdit();
+  }
+
+  cancelEdit() {
+    this.editingIndex = null;
+    this.editValue = null;
+    this.originalValue = null;
+  }
+
+  onKeydown(event: KeyboardEvent, index: number) {
+    if (event.key === 'Enter') {
+      (event.target as HTMLElement).blur();
+    } else if (event.key === 'Escape') {
+      this.cancelEdit();
+    }
+  }
+
+  selectText(event: FocusEvent) {
+    const input = event.target as HTMLInputElement;
+    // Wait for DOM to render before selecting (important)
+    setTimeout(() => input.select(), 0);
+  }
+
+  // Example API call
+  updateConsumption(id: string, newValue: number) {
+    // Replace with your actual service method
+    this.waterService.updateReading(id, { Consumption: newValue }).subscribe({
+      next: () => {
+       
+      },
+      error: (err) => {
+        console.error('Error updating consumption:', err);
+        alert('❌ Failed to update consumption.');
+      }
+    }); 
   }
 }

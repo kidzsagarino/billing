@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { Unit } from '../models/Unit';
 import { v4 as uuidv4 } from 'uuid';
+import { MoveIn } from '../models';
 
 export default async function unitRoutes(fastify: FastifyInstance) {
   // GET all units
@@ -49,4 +50,17 @@ export default async function unitRoutes(fastify: FastifyInstance) {
     await unit.destroy();
     reply.send({ message: 'Unit deleted' });
   });
+
+  fastify.get('/getMoveinName', async (request, reply) => {
+    const { unitNumber } = request.query as { unitNumber: string };
+   const unit = await Unit.findOne({
+    where: { UnitNumber: unitNumber },
+    include: ['moveins']
+  });
+    if (!unit) return reply.status(200).send({FullName: ''});
+      const { FullName } = await (MoveIn.findOne({ where: { UnitId: unit.Id } }))
+      console.log('FullName found:', FullName);
+    reply.code(200).send({FullName});
+  });
+
 }
