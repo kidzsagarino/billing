@@ -1,23 +1,81 @@
-<mat-sidenav-container class="h-screen">
-        <mat-sidenav mode="side" opened class="w-64">
-            <div class="p-4 text-xl font-semibold">Billing UI</div>
-            <mat-nav-list>
-                <a mat-list-item routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
-                <a mat-list-item routerLink="/moveins" routerLinkActive="active">Customers</a>
-                <a mat-list-item routerLink="/units" routerLinkActive="active">Units</a>
-                <a mat-list-item routerLink="/invoices" routerLinkActive="active">Invoices</a>
-                <a mat-list-item routerLink="/billing-run" routerLinkActive="active">Billing Run</a>
-                <a mat-list-item routerLink="/payments" routerLinkActive="active">Payments</a>
-            </mat-nav-list>
-        </mat-sidenav>
-        <mat-sidenav-content>
-            <mat-toolbar color="primary">
-                <span class="font-semibold">Condo Billing Management</span>
-                <span class="flex-1"></span>
-                <button mat-icon-button aria-label="Notifications"><mat-icon>notifications</mat-icon></button>
-            </mat-toolbar>
-        <div class="p-6">
-        <router-outlet />
-        </div>
-        </mat-sidenav-content>
-    </mat-sidenav-container>
+<mat-sidenav-container class="h-screen bg-gray-50">
+  <!-- SIDEBAR -->
+  <mat-sidenav
+    mode="side"
+    opened
+    class="w-64 bg-white shadow-lg border-r border-gray-200"
+  >
+    <div class="p-6 text-2xl font-bold text-gray-800">Billing UI</div>
+
+    <mat-nav-list class="space-y-1">
+      <a 
+        mat-list-item 
+        routerLink="/dashboard" 
+        routerLinkActive="bg-blue-100 text-blue-700 font-semibold rounded-lg"
+        class="!py-3 !px-4 rounded-lg hover:bg-gray-100 transition"
+      >
+        Dashboard
+      </a>
+
+      <a 
+        mat-list-item 
+        routerLink="/moveins" 
+        routerLinkActive="bg-blue-100 text-blue-700 font-semibold rounded-lg"
+        class="!py-3 !px-4 rounded-lg hover:bg-gray-100 transition"
+      >
+        Customers
+      </a>
+
+      <a 
+        mat-list-item 
+        routerLink="/units" 
+        routerLinkActive="bg-blue-100 text-blue-700 font-semibold rounded-lg"
+        class="!py-3 !px-4 rounded-lg hover:bg-gray-100 transition"
+      >
+        Units
+      </a>
+
+      <a 
+        mat-list-item 
+        routerLink="/invoices" 
+        routerLinkActive="bg-blue-100 text-blue-700 font-semibold rounded-lg"
+        class="!py-3 !px-4 rounded-lg hover:bg-gray-100 transition"
+      >
+        Invoices
+      </a>
+
+      <a 
+        mat-list-item 
+        routerLink="/billing-run" 
+        routerLinkActive="bg-blue-100 text-blue-700 font-semibold rounded-lg"
+        class="!py-3 !px-4 rounded-lg hover:bg-gray-100 transition"
+      >
+        Billing Run
+      </a>
+
+      <a 
+        mat-list-item 
+        routerLink="/payments" 
+        routerLinkActive="bg-blue-100 text-blue-700 font-semibold rounded-lg"
+        class="!py-3 !px-4 rounded-lg hover:bg-gray-100 transition"
+      >
+        Payments
+      </a>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <!-- MAIN CONTENT -->
+  <mat-sidenav-content class="bg-gray-50">
+    <mat-toolbar color="primary" class="!px-6 shadow">
+      <span class="text-lg font-semibold">Condo Billing Management</span>
+      <span class="flex-1"></span>
+      <button mat-icon-button aria-label="Notifications">
+        <mat-icon>notifications</mat-icon>
+      </button>
+    </mat-toolbar>
+
+    <div class="p-8">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

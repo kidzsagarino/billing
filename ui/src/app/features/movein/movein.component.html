@@ -18,125 +18,171 @@
       {{ isEditing ? '✏️ Update Move-In' : '➕ Add New Move-In' }}
     </h3>
 
-    <!-- Move-In Form -->
+  <!-- Move-In Form with Floating Labels -->
     <form
       (ngSubmit)="isEditing ? updateMoveIn() : addMoveIn()"
       #moveInForm="ngForm"
       class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6"
     >
-      <div>
-        <label class="font-semibold block mb-1">Full Name</label>
+      <!-- Full Name -->
+      <div class="relative">
         <input
           type="text"
           [(ngModel)]="moveIn.FullName"
           name="FullName"
           required
-          class="border rounded-lg px-3 py-2 w-full"
+          placeholder=" "
+          class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
+        <label
+          class="absolute left-3 top-2 text-gray-400 text-sm peer-placeholder-shown:top-5 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-blue-500 peer-focus:text-sm transition-all"
+        >
+          Full Name
+        </label>
       </div>
 
-      <div>
-        <label class="font-semibold block mb-1">Email</label>
+      <!-- Email -->
+      <div class="relative">
         <input
           type="email"
           [(ngModel)]="moveIn.Email"
           name="Email"
           required
-          class="border rounded-lg px-3 py-2 w-full"
+          placeholder=" "
+          class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
+        <label
+          class="absolute left-3 top-2 text-gray-400 text-sm peer-placeholder-shown:top-5 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-blue-500 peer-focus:text-sm transition-all"
+        >
+          Email
+        </label>
       </div>
 
-      <div>
-        <label class="font-semibold block mb-1">Mobile Number</label>
+      <!-- Mobile Number -->
+      <div class="relative">
         <input
           type="tel"
           [(ngModel)]="moveIn.Mobile"
           name="Mobile"
           required
-          class="border rounded-lg px-3 py-2 w-full"
+          placeholder=" "
+          class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
+        <label
+          class="absolute left-3 top-2 text-gray-400 text-sm peer-placeholder-shown:top-5 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-blue-500 peer-focus:text-sm transition-all"
+        >
+          Mobile Number
+        </label>
       </div>
 
-      <div>
-        <label class="font-semibold block mb-1">Move-In Date</label>
+      <!-- Move-In Date -->
+      <div class="relative">
         <input
           type="date"
           [(ngModel)]="moveIn.MoveInDate"
           name="MoveInDate"
           required
-          class="border rounded-lg px-3 py-2 w-full"
+          placeholder=" "
+          class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
+        <label
+          class="absolute left-3 top-2 text-gray-400 text-sm peer-placeholder-shown:top-5 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-blue-500 peer-focus:text-sm transition-all"
+        >
+          Move-In Date
+        </label>
       </div>
 
-      <div>
-        <label class="font-semibold block mb-1">Building</label>
+      <!-- Building -->
+      <div class="relative">
         <select
           [(ngModel)]="moveIn.BuildingId"
           name="BuildingId"
           (change)="onFormBuildingChange()"
           required
-          class="border rounded-lg px-3 py-2 w-full"
+          class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
         >
-          <option value="">Select Building</option>
-          <option *ngFor="let b of buildings" [value]="b.Id">
-            {{ b.BuildingNumber }}
-          </option>
+          <option value="" disabled selected></option>
+          <option *ngFor="let b of buildings" [value]="b.Id">{{ b.BuildingNumber }}</option>
         </select>
+        <label
+          class="absolute left-3 top-2 text-gray-400 text-sm peer-focus:top-2 peer-focus:text-blue-500 peer-focus:text-sm transition-all"
+        >
+          Building
+        </label>
       </div>
 
-      <div>
-        <label class="font-semibold block mb-1">Unit</label>
+      <!-- Unit -->
+      <div class="relative">
         <select
           [(ngModel)]="moveIn.UnitId"
           name="UnitId"
           required
-          class="border rounded-lg px-3 py-2 w-full"
+          class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
         >
-          <option value="">Select Unit</option>
-          <option *ngFor="let u of units" [value]="u.Id">
-            {{ u.UnitNumber }}
-          </option>
+          <option value="" disabled selected></option>
+          <option *ngFor="let u of units" [value]="u.Id">{{ u.UnitNumber }}</option>
         </select>
+        <label
+          class="absolute left-3 top-2 text-gray-400 text-sm peer-focus:top-2 peer-focus:text-blue-500 peer-focus:text-sm transition-all"
+        >
+          Unit
+        </label>
       </div>
 
+      <!-- Submit Button -->
       <div class="col-span-full text-right">
         <button
           type="submit"
-          class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+          class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
         >
           {{ isEditing ? '💾 Update Move-In' : '➕ Add Move-In' }}
         </button>
       </div>
     </form>
+
   </div>
 </div>
 
 <div class="p-6 bg-white rounded-xl shadow-md">
   <!-- Header -->
   <div class="mb-4 flex justify-between items-center">
-    <h2 class="text-2xl font-bold text-gray-700">🏠 Move-In Records</h2>
+    <h2 class="text-2xl font-bold text-gray-700"> Move-In Records</h2>
   </div>
 
   <!-- Filters & Search -->
   <div class="flex flex-wrap gap-4 mb-5">
     <!-- Building Filter -->
-    <div>
-      <label class="block text-sm font-semibold mb-1">Building</label>
-      <input placeholder="Bldg. #" value="303"
-           class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
-    </div>
+    
+      <!-- Building Filter -->
+      <div class="relative">
+        <input
+          type="text"
+          placeholder=" "
+          value="303"
+          class="peer block w-40 border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
+        <label
+          class="absolute left-3 top-2 text-gray-400 text-sm peer-placeholder-shown:top-5 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-blue-500 peer-focus:text-sm transition-all"
+        >
+          Building
+        </label>
+      </div>
 
-    <!-- Unit Filter -->
-    <div>
-      <label class="block text-sm font-semibold mb-1">Unit</label>
-      <input
-        type="text"
-        class="border rounded-lg px-3 py-2 w-40"
-        [(ngModel)]="searchText"
-        (ngModelChange)="onSearchChange()"
-        placeholder="Enter unit #"
-      />
-    </div>
+      <!-- Unit Filter -->
+      <div class="relative">
+        <input
+          type="text"
+          placeholder=" "
+          [(ngModel)]="searchText"
+          (ngModelChange)="onSearchChange()"
+          class="peer block w-40 border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
+        <label
+          class="absolute left-3 top-2 text-gray-400 text-sm peer-placeholder-shown:top-5 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-blue-500 peer-focus:text-sm transition-all"
+        >
+          Unit
+        </label>
+      </div>
   </div>
 
   <!-- Move-In Table -->

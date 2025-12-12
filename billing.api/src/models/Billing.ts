@@ -27,7 +27,7 @@ export class Billing extends Model<
   declare TotalAmount: number;
   declare PaidAmount: number;
   declare Balance: number;
-  declare Status: 'Unpaid' | 'Paid' | 'PartiallyPaid' | 'Overdue';
+  declare Status: string;
   declare CreatedAt: CreationOptional<Date>;
   declare UpdatedAt: CreationOptional<Date>;
 
@@ -57,35 +57,35 @@ Billing.init(
       allowNull: false,
     },
     CondoDues: {
-      type: DataTypes.DECIMAL(10, 2),
+      type: DataTypes.DECIMAL(10, 3),
       defaultValue: 2000.0,
     },
     WaterBill: {
-      type: DataTypes.DECIMAL(10, 2),
+      type: DataTypes.DECIMAL(10, 3),
       defaultValue: 0.0,
     },
     OverdueAmount: {
-      type: DataTypes.DECIMAL(10, 2),
+      type: DataTypes.DECIMAL(10, 3),
       defaultValue: 0.0,
     },
     Penalty: {
-      type: DataTypes.DECIMAL(10, 2),
+      type: DataTypes.DECIMAL(10, 3),
       defaultValue: 0.0,
     },
     TotalAmount: {
-      type: DataTypes.DECIMAL(10, 2),
+      type: DataTypes.DECIMAL(10, 3),
       defaultValue: 0.0,
     },
     PaidAmount: {
-      type: DataTypes.DECIMAL(10, 2),
+      type: DataTypes.DECIMAL(10, 3),
       defaultValue: 0.0,
     },
     Balance: {
-      type: DataTypes.DECIMAL(10, 2),
+      type: DataTypes.DECIMAL(10, 3),
       defaultValue: 0.00,
     },
     Status: {
-      type: DataTypes.ENUM('Unpaid', 'Paid', 'PartiallyPaid', 'Overdue'),
+      type: DataTypes.STRING(20),
       defaultValue: 'Unpaid',
     },
     CreatedAt: {

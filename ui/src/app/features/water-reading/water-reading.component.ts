@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { WaterService } from '../../services/water.service';
 import { BuildingService } from '../../services/building.service';
 import { UnitService } from '../../services/unit.service';
+import { HotToastService } from '@ngxpert/hot-toast';
 
 @Component({
   selector: 'app-water-reading',
@@ -52,7 +53,8 @@ export class WaterReadingComponent {
   constructor(
     private waterService: WaterService,
     private buildingService: BuildingService,
-    private unitService: UnitService
+    private unitService: UnitService,
+    private toast: HotToastService
   ) {}
 
   ngOnInit() {
@@ -88,7 +90,7 @@ export class WaterReadingComponent {
         this.total = this.readings.length;
 
       },
-      error: (err) => console.error('Error loading water readings:', err)
+      error: (err) => this.toast.error('Error loading water readings: ' + (err.error?.error || err.message || 'Unknown error'))
     });
   }
 
@@ -216,7 +218,7 @@ export class WaterReadingComponent {
       ,
       error: (err) => {
         console.error('Error loading readings for billing month:', err);
-        alert(err.error.message || '❌ Failed to load readings for billing month.');
+        this.toast.error(err.error.message || '❌ Failed to load readings for billing month.');
       }
     });
   }

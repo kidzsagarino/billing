@@ -1,33 +1,32 @@
 import { FastifyInstance } from 'fastify';
 import { Billing } from '../models/Billing';
-import { MoveIn } from '../models/MoveIn';
 import { Unit } from '../models/Unit';
 import { v4 as uuidv4 } from 'uuid';
 import WaterReading from '../models/WaterReading';
-import { parse } from 'path';
-
+import { Payment } from '../models';
+import { stat } from 'fs';
+import isOverDue from '../service/isOverDue';
 
 export default async function billingRoutes(fastify: FastifyInstance) {
   fastify.post('/generate', async (request, reply) => {
     try {
         const { billingMonth } = request.body as { billingMonth: string };
-        // ✅ Compute end of billing month
+        
         const [year, month] = billingMonth.split('-').map(Number);
         const endOfMonth = new Date(year, month, 0); // last day of the billing month
 
-        // ✅ Compute due date = end of month + 7 days
         const dueDate = new Date(endOfMonth);
         dueDate.setDate(endOfMonth.getDate() + 7);
         
         const prevMonth = new Date(year, month - 2, 1);
         const prevMonthStr = `${prevMonth.getFullYear()}-${String(prevMonth.getMonth() + 1).padStart(2, '0')}`;
 
-        // Fetch only active tenants with assigned UnitId
         const units: Unit[] = await Unit.findAll({
+            where: { Id: '5ac0f0fc-ae65-11f0-89fa-a0b339377237' },
         });
 
         if (units.length === 0) {
-            return reply.send({ message: 'No active unit found with assigned units.' });
+            return reply.code(400).send({ error: 'No active unit found with assigned units.' });
         }
 
         const bills: any[] = [];
@@ -58,13 +57,28 @@ export default async function billingRoutes(fastify: FastifyInstance) {
                     BillingMonth: prevMonthStr,
                 }
             }) || { Consumption: 0 };
-
+           
             let penalty = 0.00;
-            let overdueAmount = 0;
-            if (lastBill && (lastBill.Status === 'Unpaid' || lastBill.Status === 'PartiallyPaid')) {
-                overdueAmount = parseFloat((lastBill?.Balance).toString()) || 0;
-                penalty = 200.00;
+            let overdueAmount = lastBill?.Balance ? parseFloat(lastBill?.Balance.toLocaleString()) : 0;
+           
+            if(overdueAmount > 0) {
+              penalty = 200.00;
             }
+
+            const latestPaymentDate: string = await Payment.max("PaymentDate", {
+                where: {
+                  UnitID: unit.Id,
+                  BillingMonth: billingMonth,
+                },
+            }) || undefined;
+
+            if(latestPaymentDate) {
+              if(isOverDue(latestPaymentDate, dueDate)){
+                penalty = 200.00;
+              }
+            }
+
+            console.log(latestPaymentDate, dueDate);
 
             // ✅ Compute total
             const condoDues = 2000.00;
@@ -80,6 +94,26 @@ export default async function billingRoutes(fastify: FastifyInstance) {
 
             const total = condoDues + waterBill + overdueAmount + penalty;
 
+            const paidAmount = await Payment.sum("Amount", {
+                where: {
+                  UnitID: unit.Id,
+                  BillingMonth: billingMonth,
+                },
+              }) || 0.0;
+
+            const balance = total - paidAmount;
+            let status = 'Unpaid';
+
+            if(balance <= 0){
+                status = 'Paid';
+            }
+
+            else if(paidAmount != 0.0 && balance > 0){
+                status = 'PartiallyPaid';    
+            }
+
+            
+            
             bills.push({
                 Id: uuidv4(),
                 UnitId: unit.Id,
@@ -90,9 +124,9 @@ export default async function billingRoutes(fastify: FastifyInstance) {
                 OverdueAmount: overdueAmount,
                 Penalty: penalty,
                 TotalAmount: total,
-                PaidAmount: 0.00,
-                Balance: total,
-                Status: 'Unpaid',
+                PaidAmount: paidAmount,
+                Balance: balance,
+                Status: status,
             });
         }
         if(bills.length === 0) {
@@ -122,7 +156,7 @@ export default async function billingRoutes(fastify: FastifyInstance) {
       
       // ✅ Query billing records for that month with tenant + unit details
       const bills = await Billing.findAll({
-        where: { BillingMonth: billingMonth },
+        where: { BillingMonth: billingMonth, UnitId: '5ac0f0fc-ae65-11f0-89fa-a0b339377237' },
         include: [
           { association: 'unit', required: false, 
             include: [ { association: 'building', required: false }] },
@@ -136,24 +170,29 @@ export default async function billingRoutes(fastify: FastifyInstance) {
       }
 
       // ✅ Transform data for cleaner output
-      const formatted = bills.map((bill: any) => ({
-        BillingId: bill.Id,
-        BillingMonth: bill.BillingMonth,
-        DueDate: bill.DueDate,
-        FullName: bill.moveIn?.FullName ?? 'Vacant',    // lowercase alias
-        Email: bill.moveIn?.Email ?? '',
-        Mobile: bill.moveIn?.Mobile ?? '',
-        BuildingNumber: bill.unit?.building?.BuildingNumber ?? '', // lowercase alias
-        UnitNumber: bill.unit?.UnitNumber ?? '',        // lowercase alias
-        CondoDues: bill.CondoDues,
-        WaterBill: bill.WaterBill,
-        OverdueAmount: bill.OverdueAmount,
-        Penalty: bill.Penalty,
-        TotalAmount: bill.TotalAmount,
-        PaidAmount: bill.PaidAmount,
-        Balance: bill.Balance,
-        Status: bill.Status
-    }));
+      const formatted = await Promise.all(
+        bills.map(async (bill: any) => {
+          
+          return {
+            BillingId: bill.Id,
+            BillingMonth: bill.BillingMonth,
+            DueDate: bill.DueDate,
+            FullName: bill.moveIn?.FullName ?? "Vacant",
+            Email: bill.moveIn?.Email ?? "",
+            Mobile: bill.moveIn?.Mobile ?? "",
+            BuildingNumber: bill.unit?.building?.BuildingNumber ?? "",
+            UnitNumber: bill.unit?.UnitNumber ?? "",
+            CondoDues: bill.CondoDues,
+            WaterBill: bill.WaterBill,
+            OverdueAmount: bill.OverdueAmount,
+            Penalty: bill.Penalty,
+            TotalAmount: bill.TotalAmount,
+            PaidAmount: bill.PaidAmount,
+            Balance: bill.Balance,
+            Status: bill.Status,
+          };
+        })
+      );
 
     reply.send({
       billingMonth,
@@ -171,39 +210,50 @@ export default async function billingRoutes(fastify: FastifyInstance) {
     try {
       const { q } = request.query as { q?: string };
       
-      // ✅ Query billing records for that month with tenant + unit details
       const bills = await Billing.findAll({
+        where: {
+            '$unit.UnitNumber$': q.trim()     // <-- filter here
+        },
         include: [
-          { association: 'unit', required: true, include: [ { association: 'building', required: false } ],
-          where: {
-            UnitNumber: q.trim()
-          }
-         },
-          { association: 'moveIn', required: false },
+            {
+                association: 'unit',
+                required: false,              // <-- keep LEFT JOIN
+                include: [
+                    { association: 'building', required: false }
+                ]
+            },
+            { association: 'moveIn', required: false } // <-- LEFT JOIN
         ],
-        order: [[{ model: Unit, as: 'unit' }, 'FloorNumber', 'ASC'],  [{ model: Unit, as: 'unit' }, 'UnitNumber', 'ASC']], // sort by floor
-      });
+        order: [
+            [{ model: Unit, as: 'unit' }, 'FloorNumber', 'ASC'],
+            [{ model: Unit, as: 'unit' }, 'UnitNumber', 'ASC']
+        ]
+    });
 
-      // ✅ Transform data for cleaner output
-      const formatted = bills.map((bill: any) => ({
-        BillingId: bill.Id,
-        BillingMonth: bill.BillingMonth,
-        DueDate: bill.DueDate,
-        FullName: bill.moveIn?.FullName ?? 'Vacant',    // lowercase alias
-        Email: bill.moveIn?.Email ?? '',
-        Mobile: bill.moveIn?.Mobile ?? '',
-        BuildingNumber: bill.unit?.building?.BuildingNumber ?? '', // lowercase alias
-        UnitNumber: bill.unit?.UnitNumber ?? '',        // lowercase alias
-        CondoDues: bill.CondoDues,
-        WaterBill: bill.WaterBill,
-        OverdueAmount: bill.OverdueAmount,
-        Penalty: bill.Penalty,
-        TotalAmount: bill.TotalAmount,
-        PaidAmount: bill.PaidAmount,
-        Balance: bill.Balance,
-        Status: bill.Status
+      
+    const formatted = await Promise.all(bills.map(async (bill: any) => {
+
+      
+        return {
+          BillingId: bill.Id,
+          BillingMonth: bill.BillingMonth,
+          DueDate: bill.DueDate,
+          FullName: bill.moveIn?.FullName ?? 'Vacant',    // lowercase alias
+          Email: bill.moveIn?.Email ?? '',
+          Mobile: bill.moveIn?.Mobile ?? '',
+          BuildingNumber: bill.unit?.building?.BuildingNumber ?? '', // lowercase alias
+          UnitNumber: bill.unit?.UnitNumber ?? '',        // lowercase alias
+          CondoDues: bill.CondoDues,
+          WaterBill: bill.WaterBill,
+          OverdueAmount: bill.OverdueAmount,
+          Penalty: bill.Penalty,
+          TotalAmount: bill.TotalAmount,
+          PaidAmount: bill.PaidAmount,
+          Balance: bill.Balance,
+          Status: bill.Status
+      }
     }));
-
+      
     reply.send({
       totalRecords: formatted.length,
       data: formatted,

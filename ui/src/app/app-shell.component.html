@@ -5,10 +5,10 @@
     class="bg-white border-r border-gray-200 transition-all duration-300"
   >
     <div class="p-4 font-bold text-xl border-b border-gray-200">
-      <span *ngIf="sidebarOpen">Billing Manager</span>
-      <button class="ml-auto" (click)="toggleSidebar()">
+       <button class="ml-auto mr-2" (click)="toggleSidebar()">
         ☰
       </button>
+      <span *ngIf="sidebarOpen">Billing Manager</span>
     </div>
 
     <nav class="mt-4 flex flex-col">

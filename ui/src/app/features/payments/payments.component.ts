@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import PaymentService from '../../services/payment.service';
 import { UnitService } from '../../services/unit.service';
 import { PaymentTypeOptions, PaymentType  } from '../../constants/paymenttype';
+import { HotToastService } from '@ngxpert/hot-toast';
 
 @Component({
   selector: 'app-payments',
@@ -15,7 +16,7 @@ import { PaymentTypeOptions, PaymentType  } from '../../constants/paymenttype';
 })
 export class PaymentsComponent {
 
-  constructor(private paymentService: PaymentService, private unitService: UnitService) {}
+  constructor(private paymentService: PaymentService, private unitService: UnitService, private toast: HotToastService) {}
 
   selectedYear: number = 2025;
   selectedMonth: number = 10;
@@ -46,6 +47,8 @@ export class PaymentsComponent {
   years: number[] = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i); // last 5 years
   months: number[] = Array.from({ length: 12 }, (_, i) => i + 1);
   moveInName: string = '';
+
+  @ViewChild('paymentForm') paymentForm!: NgForm;
 
   openModal() {
     this.showModal = true;
@@ -92,6 +95,12 @@ export class PaymentsComponent {
   }
 
   submitPayment() {
+     if (this.paymentForm.invalid) {
+      this.paymentForm.control.markAllAsTouched();
+
+      return;
+    }
+
     this.payment.BillingMonth = `${this.payment.BillingYear}-${this.payment.BillingMonth.toString().padStart(2, '0')}`;
     this.paymentService.createPayment(this.payment).subscribe({
       next: (res) => {
@@ -100,7 +109,7 @@ export class PaymentsComponent {
       }
       ,
       error: (err) => {
-        console.error('Error creating payment:', err);
+        this.toast.error('Error creating payment: ' + (err.error?.error || err.error || err.message || 'Unknown error'));
       }
     });
     this.closeModal();
@@ -119,6 +128,12 @@ export class PaymentsComponent {
   }
 
   updatePayment() {
+
+    if (this.paymentForm.invalid) {
+      this.paymentForm.control.markAllAsTouched();
+      return;
+    }
+
     this.payment.BillingMonth = `${this.payment.BillingYear}-${this.payment.BillingMonth.toString().padStart(2, '0')}`;
     this.paymentService.updatePayment(this.payment.Id, this.payment).subscribe({
       next: (res: any) => {

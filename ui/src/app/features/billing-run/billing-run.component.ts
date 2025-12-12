@@ -11,6 +11,7 @@ import { Component, OnInit } from '@angular/core';
 import { BillingService } from '../../services/billing.service';
 
 import { BillingRecord } from '../../models/billing.model';
+import { HotToastService } from '@ngxpert/hot-toast';
 
 export interface Billing {
   FullName: string;
@@ -57,7 +58,10 @@ export class BillingRunComponent {
   years: number[] = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i); // last 5 years
   months: number[] = Array.from({ length: 12 }, (_, i) => i + 1);
 
-  constructor(private billingService: BillingService) {}
+  constructor(
+    private billingService: BillingService,
+    private toast: HotToastService
+  ) {}
 
   ngOnInit() {
     this.loadBilling();
@@ -101,7 +105,7 @@ export class BillingRunComponent {
         this.loadBilling();
       },
       error: (err) => {
-        alert(err.error);
+        this.toast.error(err.error);
         this.loading = false;
       }
     });

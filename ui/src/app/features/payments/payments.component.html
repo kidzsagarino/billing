@@ -16,193 +16,236 @@
     <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
       <h2 class="text-xl font-bold mb-4">{{ isEditing ? 'Update Payment' : 'Add Payment' }}</h2>
 
-      <form (ngSubmit)=" isEditing ? updatePayment() : submitPayment()" #paymentForm="ngForm" class="space-y-4">
-        
-        <!-- Year Dropdown -->
+      <form (ngSubmit)="isEditing ? updatePayment() : submitPayment()" #paymentForm="ngForm" class="space-y-4">
         <div class="grid grid-cols-2 gap-2">
-          <label class="w-full block font-medium mb-1">Year & Month</label>
-          <div class="grid grid-cols-2 gap-2">
+          <div class="relative">
             <select 
-            name="billingYear"
-            class="w-50 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            [(ngModel)]="payment.BillingYear"
+              name="billingYear"
+              [(ngModel)]="payment.BillingYear"
+              #yearControl="ngModel" class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              required
             >
-            <option *ngFor="let y of years" [value]="y">{{ y }}</option>
-          </select>
-          <select 
-            name="billingMonth"
-            class="w-50 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            [(ngModel)]="payment.BillingMonth">
-            <option *ngFor="let m of months" [value]="m">{{ m }}</option>
-          </select>
+              <option value="" disabled selected></option> 
+              <option *ngFor="let y of years" [value]="y">{{ y }}</option>
+            </select>
+            <label class="absolute left-3 top-2 text-gray-400 text-sm peer-focus:text-blue-500 peer-focus:text-sm transition-all">Year</label>
+
+            <div *ngIf="yearControl.invalid && yearControl.touched" class="text-red-500 text-xs mt-1"> 
+              <span *ngIf="yearControl.errors?.['required']">
+                Year is required.
+              </span>
+            </div>
+          </div>
+
+          <div class="relative">
+            <select 
+              name="billingMonth"
+              [(ngModel)]="payment.BillingMonth"
+              #monthControl="ngModel" class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              required
+            >
+              <option value="" disabled selected></option>
+              <option *ngFor="let m of months" [value]="m">{{ m }}</option>
+            </select>
+            <label class="absolute left-3 top-2 text-gray-400 text-sm peer-focus:text-blue-500 peer-focus:text-sm transition-all">Month</label>
+            
+            <div *ngIf="monthControl.invalid && monthControl.touched" class="text-red-500 text-xs mt-1"> 
+              <span *ngIf="monthControl.errors?.['required']">
+                Month is required.
+              </span>
+            </div>
           </div>
         </div>
 
-        <!-- Unit -->
-        <div class="grid grid-cols-2 gap-2">
-          <label class="w-full block font-medium mb-1" for="building">Building</label>
-          <input 
-            type="text"
-            name="building"
-            value="303"
-            readonly
-            class="w-full border border-gray-300 rounded-lg p-2 focus:ring focus:ring-blue-200"
-          />
-        </div>
-        <!-- Unit -->
-        <div class="grid grid-cols-2 gap-2">
-          <label class="w-full block font-medium mb-1" for="unit">Unit</label>
+        <div class="relative">
           <input 
             type="text"
             name="unit"
             [(ngModel)]="payment.UnitNumber"
             (ngModelChange)="searchMoveinNameInUnit()"
             required
-            class="w-full border border-gray-300 rounded-lg p-2 focus:ring focus:ring-blue-200"
+            #unitControl="ngModel" class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
+          <label class="absolute left-3 top-2 text-gray-400 text-sm peer-focus:text-blue-500 peer-focus:text-sm transition-all">Unit Number</label>
+          
+          <div *ngIf="unitControl.invalid && unitControl.touched" class="text-red-500 text-xs mt-1"> 
+            <span *ngIf="unitControl.errors?.['required']">
+              Unit Number is required.
+            </span>
+          </div>
         </div>
-        <div class="grid grid-cols-2 gap-2">
-          <label class="w-full block font-medium mb-1" for="moveIn">Movein Name</label>
+
+        <div class="relative">
           <input 
             type="text"
             name="movein"
-            value="303"
             [(ngModel)]="moveInName"
             readonly
-            class="w-full border border-gray-300 rounded-lg p-2 focus:ring focus:ring-blue-200"
+            class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-100 cursor-not-allowed"
           />
+          <label class="absolute left-3 top-2 text-gray-400 text-sm transition-all">Movein Name</label>
         </div>
-        <!-- Payee
-        <div>
-          <label class="block font-medium mb-1">Payee</label>
-          <input 
-            type="text"
-            name="payee"
-            [(ngModel)]="payment.payee"
-            required
-            class="w-full border border-gray-300 rounded-lg p-2 focus:ring focus:ring-blue-200"
-          />
-        </div> -->
 
-        <div class="grid grid-cols-2 gap-2">
-          <label class="w-full block font-medium mb-1" for="date">Payment Date</label>
-          <input
+        <div class="relative">
+          <input 
             type="date"
-            [(ngModel)]="payment.PaymentDate"
             name="date"
+            [(ngModel)]="payment.PaymentDate"
             required
-            class="border rounded-lg px-3 py-2 w-full"
+            #dateControl="ngModel" class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
+          <label class="absolute left-3 top-2 text-gray-400 text-sm peer-focus:text-blue-500 peer-focus:text-sm transition-all">Payment Date</label>
+
+          <div *ngIf="dateControl.invalid && dateControl.touched" class="text-red-500 text-xs mt-1"> 
+            <span *ngIf="dateControl.errors?.['required']">
+              Payment Date is required.
+            </span>
+          </div>
         </div>
-        <!-- Amount -->
-        <div class="grid grid-cols-2 gap-2">
-          <label class="w-full block font-medium mb-1" for="amount">Amount</label>
+
+        <div class="relative">
           <input 
             type="number"
             name="amount"
             [(ngModel)]="payment.Amount"
             required
-            class="w-full border border-gray-300 rounded-lg p-2 focus:ring focus:ring-blue-200"
+            #amountControl="ngModel" class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
+          <label class="absolute left-3 top-2 text-gray-400 text-sm peer-focus:text-blue-500 peer-focus:text-sm transition-all">Amount</label>
+
+          <div *ngIf="amountControl.invalid && amountControl.touched" class="text-red-500 text-xs mt-1"> 
+            <span *ngIf="amountControl.errors?.['required']">
+              Amount is required.
+            </span>
+          </div>
         </div>
 
-        <!-- AR Number -->
-        <div class="grid grid-cols-2 gap-2">
-          <label class="w-full block font-medium mb-1" for="arNumber">AR #</label>
+        <div class="relative">
           <input 
             type="text"
             name="arNumber"
             [(ngModel)]="payment.ARNumber"
-            class="w-full border border-gray-300 rounded-lg p-2 focus:ring focus:ring-blue-200"
+            class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
-        </div>
-        <div class="grid grid-cols-2 gap-2">
-          <label class="w-full block font-medium mb-1" for="paymentType">Payment Type</label>
+          <label class="absolute left-3 top-2 text-gray-400 text-sm peer-focus:text-blue-500 peer-focus:text-sm transition-all">AR #</label>
+          </div>
+
+        <div class="relative">
           <select 
-            class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            [(ngModel)]="payment.PaymentType"
             name="paymentType"
+            [(ngModel)]="payment.PaymentType"
+            #typeControl="ngModel"
+            class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
           >
-            <option *ngFor="let paymentType of paymentTypes" [value]="paymentType.value">{{ paymentType.label }}</option>
+            <option [ngValue]="null" disabled selected>Select Payment Type</option> 
+            <option *ngFor="let type of paymentTypes" [value]="type.value">{{ type.label }}</option>
           </select>
+          <label class="absolute left-3 top-2 text-gray-400 text-sm peer-focus:text-blue-500 peer-focus:text-sm transition-all">Payment Type</label>
+
+          <div *ngIf="typeControl.invalid && typeControl.touched" class="text-red-500 text-xs mt-1"> 
+            <span *ngIf="typeControl.errors?.['required']">
+              Payment Type is required.
+            </span>
+          </div>
         </div>
-        <!-- Ref Number -->
-        <div class="grid grid-cols-2 gap-2">
-          <label class="w-full block font-medium mb-1">Ref #</label>
+
+        <div class="relative">
           <input 
             type="text"
             name="refNumber"
             [(ngModel)]="payment.RefNumber"
-            class="w-full border border-gray-300 rounded-lg p-2 focus:ring focus:ring-blue-200"
+            class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
-        </div>
+          <label class="absolute left-3 top-2 text-gray-400 text-sm peer-focus:text-blue-500 peer-focus:text-sm transition-all">Ref #</label>
+          </div>
 
-        <!-- BUTTONS -->
         <div class="flex justify-end gap-2 pt-4">
+          <button type="button" (click)="closeModal()" class="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400 transition">Cancel</button>
+          
           <button 
-            type="button" 
-            (click)="closeModal()" 
-            class="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400 transition">
-            Cancel
+            type="submit" 
+            [disabled]="paymentForm.invalid" class="px-4 py-2 text-white rounded-lg shadow transition"
+            [class.bg-blue-600]="!paymentForm.invalid"
+            [class.bg-gray-400]="paymentForm.invalid"
+            [class.cursor-not-allowed]="paymentForm.invalid"
+          >
+            {{ isEditing ? 'Update': 'Save' }}
           </button>
-
-        <button 
-          type="submit"
-          class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-400 transition">
-           {{ isEditing ? 'Update': 'Save' }}
-        </button>
         </div>
-      </form>
+    </form>
     </div>
   </div>
 
   <div class="flex flex-wrap gap-4">
-  <!-- Building -->
-  <div class="flex-1 min-w-[200px] flex flex-col">
-    <label class="block text-sm font-semibold mb-1">Building</label>
-    <input 
-      placeholder="Bldg. #" 
-      value="303"
-      class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-    />
-  </div>
+    <div class="flex flex-wrap gap-4">
 
-  <!-- Unit -->
-  <div class="flex-1 min-w-[200px] flex flex-col">
-    <label class="block text-sm font-semibold mb-1">Unit</label>
-    <input
-      type="text"
-      [(ngModel)]="searchUnit"
-      (ngModelChange)="onSearchChange()"
-      placeholder="Enter unit #"
-      class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-    />
-  </div>
+      <!-- Building -->
+      <div class="relative flex-1 min-w-[200px]">
+        <input
+          type="text"
+          placeholder=" "
+          value="303"
+          class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
+        <label
+          class="absolute left-3 top-2 text-gray-400 text-sm peer-placeholder-shown:top-5 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-blue-500 peer-focus:text-sm transition-all"
+        >
+          Building
+        </label>
+      </div>
 
-  <!-- Year Dropdown -->
-  <div class="flex-1 min-w-[200px] flex flex-col">
-    <label class="block text-sm font-semibold mb-1">Year</label>
-    <select 
-      class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-      [(ngModel)]="selectedYear"
-      (ngModelChange)="loadPayments()"
-    >
-      <option *ngFor="let y of years" [value]="y">{{ y }}</option>
-    </select>
-  </div>
+      <!-- Unit -->
+      <div class="relative flex-1 min-w-[200px]">
+        <input
+          type="text"
+          [(ngModel)]="searchUnit"
+          (ngModelChange)="onSearchChange()"
+          placeholder=" "
+          class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
+        <label
+          class="absolute left-3 top-2 text-gray-400 text-sm peer-placeholder-shown:top-5 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-blue-500 peer-focus:text-sm transition-all"
+        >
+          Unit
+        </label>
+      </div>
 
-  <!-- Month Dropdown -->
-  <div class="flex-1 min-w-[200px] flex flex-col">
-    <label class="block text-sm font-semibold mb-1">Month</label>
-    <select 
-      class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-      [(ngModel)]="selectedMonth"
-      (ngModelChange)="loadPayments()"
-    >
-      <option *ngFor="let m of months" [value]="m">{{ m }}</option>
-    </select>
+      <!-- Year Dropdown -->
+      <div class="relative flex-1 min-w-[200px]">
+        <select
+          [(ngModel)]="selectedYear"
+          (ngModelChange)="loadPayments()"
+          class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
+        >
+          <option value="" disabled selected></option>
+          <option *ngFor="let y of years" [value]="y">{{ y }}</option>
+        </select>
+        <label
+          class="absolute left-3 top-2 text-gray-400 text-sm peer-focus:top-2 peer-focus:text-blue-500 peer-focus:text-sm transition-all"
+        >
+          Year
+        </label>
+      </div>
+
+      <!-- Month Dropdown -->
+      <div class="relative flex-1 min-w-[200px]">
+        <select
+          [(ngModel)]="selectedMonth"
+          (ngModelChange)="loadPayments()"
+          class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
+        >
+          <option value="" disabled selected></option>
+          <option *ngFor="let m of months" [value]="m">{{ m }}</option>
+        </select>
+        <label
+          class="absolute left-3 top-2 text-gray-400 text-sm peer-focus:top-2 peer-focus:text-blue-500 peer-focus:text-sm transition-all"
+        >
+          Month
+        </label>
+      </div>
+    </div>
   </div>
-</div>
   <!-- PAYMENTS TABLE -->
   <div class="">
     <!-- TABLE WRAPPER -->
@@ -225,7 +268,7 @@
         </thead>
         <tbody>
           <tr *ngIf="payments.length === 0">
-              <td colspan="7" 
+              <td colspan="10" 
                   class="py-4 px-4 text-center text-gray-500 border-b">
                 No payments found.
             </td>
@@ -235,7 +278,7 @@
             <td class="py-2 px-4 border-b">{{ payment.unit.UnitNumber }}</td>
             <td class="py-2 px-4 border-b">{{ payment.BillingMonth }}</td>
             <td class="py-2 px-4 border-b">{{ payment.unit.moveins[0].FullName }}</td>
-            <td class="py-2 px-4 border-b">{{ payment.PaymentDate }}</td>
+            <td class="py-2 px-4 border-b">{{ payment.PaymentDate | date: 'yyyy-MM-dd' }}</td>
             <td class="py-2 px-4 border-b">₱{{ payment.Amount }}</td>
             <td class="py-2 px-4 border-b">{{ payment.ARNumber }}</td>
             <td class="py-2 px-4 border-b">{{ payment.PaymentType}}</td>
