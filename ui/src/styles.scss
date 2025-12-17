@@ -18,3 +18,9 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .mat-form-field.mat-focused .mat-form-field-outline {
   border-color: #3b82f6;
 }
+
+@layer base {
+  html {
+    font-size: 14px; /* change this (e.g. 14px, 15px) */
+  }
+}

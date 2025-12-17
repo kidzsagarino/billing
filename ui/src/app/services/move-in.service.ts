@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../env/env';
 
 @Injectable({ providedIn: 'root' })
 export class MoveInService {
-  private apiUrl = 'http://localhost:3000/api/moveins';
+  private apiUrl = `${environment.apiUrl}/moveins`;
 
   constructor(private http: HttpClient) {}
 

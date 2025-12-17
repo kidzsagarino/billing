@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../env/env';
 
 @Injectable({ providedIn: 'root' })
 export class UnitService {
-  private apiUrl = 'http://localhost:3000/api/units'; // adjust based on your backend route
+  private apiUrl = `${environment.apiUrl}/units`; 
 
   constructor(private http: HttpClient) {}
 

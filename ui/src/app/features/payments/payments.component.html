@@ -1,14 +1,4 @@
-<div class="p-6 bg-gray-50 min-h-screen">
-  <div class="flex items-center justify-between mb-4">
-    <h1 class="text-2xl font-bold text-gray-800">Payments</h1>
-    <button
-      (click)="openModal()"
-      class="bg-blue-600 text-white font-semibold rounded-md px-5 py-2 shadow-sm hover:shadow-md hover:bg-blue-700 transition"
-    >
-      + Add Payment
-    </button>
-  </div>
-  <!-- MODAL OVERLAY -->
+<!-- MODAL OVERLAY -->
   <div 
     *ngIf="showModal"
     class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4"
@@ -177,93 +167,98 @@
     </div>
   </div>
 
-  <div class="flex flex-wrap gap-4">
-    <div class="flex flex-wrap gap-4">
+<div class="p-6 bg-gray-50 min-h-screen">
+  <div class="flex items-center justify-between mb-4">
+    <h1 class="text-2xl font-bold text-gray-800">Payments</h1>
+    <button
+      (click)="openModal()"
+      class="bg-blue-600 text-white font-semibold rounded-md px-5 py-2 shadow-sm hover:shadow-md hover:bg-blue-700 transition"
+    >
+      + Add Payment
+    </button>
+  </div>
 
-      <!-- Building -->
-      <div class="relative flex-1 min-w-[200px]">
-        <input
-          type="text"
-          placeholder=" "
-          value="303"
-          class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-        <label
-          class="absolute left-3 top-2 text-gray-400 text-sm peer-placeholder-shown:top-5 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-blue-500 peer-focus:text-sm transition-all"
-        >
-          Building
-        </label>
-      </div>
+  <div class="bg-white rounded-lg grid grid-cols-4 gap-5 mb-3 w-100">
+    <!-- Building -->
+    <div class="relative">
+      <input
+        type="text"
+        placeholder=" "
+        value="303"
+        class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+      />
+      <label
+        class="absolute left-3 top-2 text-gray-400 text-sm peer-placeholder-shown:top-5 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-blue-500 peer-focus:text-sm transition-all"
+      >
+        Building
+      </label>
+    </div>
 
-      <!-- Unit -->
-      <div class="relative flex-1 min-w-[200px]">
-        <input
-          type="text"
-          [(ngModel)]="searchUnit"
-          (ngModelChange)="onSearchChange()"
-          placeholder=" "
-          class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-        <label
-          class="absolute left-3 top-2 text-gray-400 text-sm peer-placeholder-shown:top-5 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-blue-500 peer-focus:text-sm transition-all"
-        >
-          Unit
-        </label>
-      </div>
+    <!-- Unit -->
+    <div class="relative">
+      <input
+        type="text"
+        [(ngModel)]="searchUnit"
+        (ngModelChange)="searchByUnitNumber()"
+        placeholder=" "
+        class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+      />
+      <label
+        class="absolute left-3 top-2 text-gray-400 text-sm peer-placeholder-shown:top-5 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-blue-500 peer-focus:text-sm transition-all"
+      >
+        Unit
+      </label>
+    </div>
 
-      <!-- Year Dropdown -->
-      <div class="relative flex-1 min-w-[200px]">
-        <select
-          [(ngModel)]="selectedYear"
-          (ngModelChange)="loadPayments()"
-          class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
-        >
-          <option value="" disabled selected></option>
-          <option *ngFor="let y of years" [value]="y">{{ y }}</option>
-        </select>
-        <label
-          class="absolute left-3 top-2 text-gray-400 text-sm peer-focus:top-2 peer-focus:text-blue-500 peer-focus:text-sm transition-all"
-        >
-          Year
-        </label>
-      </div>
+    <!-- Year Dropdown -->
+    <div class="relative">
+      <select
+        [(ngModel)]="selectedYear"
+        (ngModelChange)="searchByBillingMonth()"
+        class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
+      >
+        <option value="" disabled selected></option>
+        <option *ngFor="let y of years" [value]="y">{{ y }}</option>
+      </select>
+      <label
+        class="absolute left-3 top-2 text-gray-400 text-sm peer-focus:top-2 peer-focus:text-blue-500 peer-focus:text-sm transition-all"
+      >
+        Year
+      </label>
+    </div>
 
-      <!-- Month Dropdown -->
-      <div class="relative flex-1 min-w-[200px]">
-        <select
-          [(ngModel)]="selectedMonth"
-          (ngModelChange)="loadPayments()"
-          class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
-        >
-          <option value="" disabled selected></option>
-          <option *ngFor="let m of months" [value]="m">{{ m }}</option>
-        </select>
-        <label
-          class="absolute left-3 top-2 text-gray-400 text-sm peer-focus:top-2 peer-focus:text-blue-500 peer-focus:text-sm transition-all"
-        >
-          Month
-        </label>
-      </div>
+    <!-- Month Dropdown -->
+    <div class="relative">
+      <select
+        [(ngModel)]="selectedMonth"
+        (ngModelChange)="searchByBillingMonth()"
+        class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
+      >
+        <option value="" disabled selected></option>
+        <option *ngFor="let m of months" [value]="m">{{ m }}</option>
+      </select>
+      <label
+        class="absolute left-3 top-2 text-gray-400 text-sm peer-focus:top-2 peer-focus:text-blue-500 peer-focus:text-sm transition-all"
+      >
+        Month
+      </label>
     </div>
   </div>
   <!-- PAYMENTS TABLE -->
-  <div class="">
-    <!-- TABLE WRAPPER -->
-    <div class="overflow-x-auto rounded-lg shadow">
-      <table class="min-w-full bg-white border border-gray-200">
-        <thead>
+  <div class="overflow-x-auto bg-gray-50">
+    <table class="min-w-full table-auto border-collapse">
+        <thead class="bg-gray-100">
           <tr class="bg-gray-100 text-left text-gray-700">
-            <th class="py-2 px-4 border-b">Bldng</th>
-            <th class="py-2 px-4 border-b">Unit</th>
-            <th class="py-2 px-4 border-b">Billing Month</th>
-            <th class="py-2 px-4 border-b">Owner</th>
-            <th class="py-2 px-4 border-b">Date</th>
-            <th class="py-2 px-4 border-b">Amount</th>
-            <th class="py-2 px-4 border-b">AR #</th>
-            <th class="py-2 px-4 border-b">Payment Type</th>
-            <th class="py-2 px-4 border-b">Ref #</th>
-            <th class="py-2 px-4 border-b">Actions</th>
-            
+            <th class="py-2 px-4 border">Bldng</th>
+            <th class="py-2 px-4 border">Unit</th>
+            <th class="py-2 px-4 border">Billing Month</th>
+            <th class="py-2 px-4 border">Owner</th>
+            <th class="py-2 px-4 border">Date</th>
+            <th class="py-2 px-4 border">Amount</th>
+            <th class="py-2 px-4 border">AR #</th>
+            <th class="py-2 px-4 border">Payment Type</th>
+            <th class="py-2 px-4 border">Ref #</th>
+            <th class="py-2 px-4 border">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -294,6 +289,5 @@
           </tr>
         </tbody>
       </table>
-    </div>
   </div>
 </div>

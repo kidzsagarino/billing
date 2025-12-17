@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { BillingRecord } from '../models/billing.model';
+import { environment } from '../../env/env';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BillingService {
 
-    private apiUrl = 'http://localhost:3000/api/billing'; // Fastify endpoint
+    private apiUrl = `${environment.apiUrl}/billing`; // Fastify endpoint
 
     constructor(private http: HttpClient) {}
 

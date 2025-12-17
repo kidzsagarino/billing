@@ -7,6 +7,7 @@ import unitRoutes from './routes/unit.routes';
 import moveinRoutes from './routes/movein.routes';
 import waterReadingRoutes from './routes/water-reading.routes';
 import paymentRoutes from './routes/payment.routes';
+import userRoutes from './routes/user.routes';
 
 const app: FastifyInstance = Fastify({ logger: true });
 
@@ -23,6 +24,7 @@ app.register(unitRoutes, { prefix: '/api/units' });
 app.register(moveinRoutes, { prefix: '/api/moveins' });
 app.register(waterReadingRoutes, { prefix: '/api/water' });
 app.register(paymentRoutes, { prefix: '/api/payments' });
+app.register(userRoutes, { prefix: '/api/users' });
 
 const start = async () => {
   try {
@@ -31,7 +33,7 @@ const start = async () => {
     console.log('✅ Database connected');
 
     // Start server
-    await app.listen({ port: 3000 });
+    await app.listen({ port: 3000, host: '0.0.0.0' });
     console.log('🚀 Fastify server running at http://localhost:3000');
   } catch (err) {
     app.log.error(err);

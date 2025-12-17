@@ -50,6 +50,14 @@ export class PaymentsComponent {
 
   @ViewChild('paymentForm') paymentForm!: NgForm;
 
+  ngOnInit() {
+    const now = new Date();
+
+    this.selectedMonth = now.getMonth() + 1;
+    this.selectedYear = now.getFullYear();
+    this.searchByBillingMonth();
+  }
+
   openModal() {
     this.showModal = true;
   }
@@ -57,10 +65,6 @@ export class PaymentsComponent {
   closeModal() {
     this.showModal = false;
     this.resetForm();
-  }
-
-  onSearchChange() {
-    this.loadPayments();
   }
 
   loadPayments() {
@@ -89,10 +93,6 @@ export class PaymentsComponent {
       }
     });
   } 
-
-  ngOnInit() {
-    this.loadPayments();
-  }
 
   submitPayment() {
      if (this.paymentForm.invalid) {
@@ -146,6 +146,39 @@ export class PaymentsComponent {
       }
     });
     this.closeModal();
+  }
+
+  searchByUnitNumber() {
+    if (!this.searchUnit) {
+      this.loadPayments();
+      return;
+    }
+    this.paymentService.searchByUnitNumber(this.searchUnit).subscribe({
+      next: (res) => {
+        console.log('Payments loaded by unit number:', res);
+        this.payments = res;
+      }
+      ,
+      error: (err) => {
+        console.error('Error loading payments by unit number:', err);
+      }
+    });
+  }
+  searchByBillingMonth() {
+    if (!this.selectedYear || !this.selectedMonth) {
+      this.loadPayments();
+      return;
+    }
+    const billingMonth = `${this.selectedYear}-${this.selectedMonth.toString().padStart(2, '0')}`;
+    this.paymentService.searchByBillingMonth(billingMonth).subscribe({
+      next: (res) => {
+        console.log('Payments loaded by billing month:', res);
+        this.payments = res;
+      } ,
+      error: (err) => {
+        console.error('Error loading payments by billing month:', err);
+      }
+    }); 
   }
 
   resetForm() {

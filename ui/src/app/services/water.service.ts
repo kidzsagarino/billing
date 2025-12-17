@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../env/env';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WaterService {
-  private apiUrl = 'http://localhost:3000/api/water';
+  private apiUrl = `${environment.apiUrl}/water`;
 
   constructor(private http: HttpClient) {}
 
@@ -26,5 +27,11 @@ export class WaterService {
 
   updateReading(id: string, data: any): Observable<any> {
     return this.http.put(`${this.apiUrl}/water-readings/updateConsumption/${id}`, data);
+  }
+  searchByUnitNumber(unitNumber: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/water-readings/searchByUnit`, { UnitNumber: unitNumber });
+  }
+  searchByBillingMonth(billingMonth: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/water-readings/searchByBillingMonth`, { BillingMonth: billingMonth });
   }
 }

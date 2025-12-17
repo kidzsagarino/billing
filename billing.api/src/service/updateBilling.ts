@@ -6,5 +6,5 @@ export default async function updateBillingAmount(billingId: string, amount: num
         throw new Error('Billing record not found');
     }
 
-    
-}
+    const newPaidAmount = parseFloat((billingRecord.PaidAmount + amount).toFixed(3));
+}   

@@ -5,26 +5,20 @@
   <div
     class="bg-white rounded-xl shadow-lg w-full max-w-2xl p-6 relative animate-fadeIn"
   >
-    <!-- Close button -->
     <button
       (click)="closeModal()"
       class="absolute top-3 right-3 text-gray-600 hover:text-black text-xl"
     >
       ✖
     </button>
-
-    <!-- Modal Title -->
     <h3 class="text-lg font-semibold mb-4">
       {{ isEditing ? '✏️ Update Move-In' : '➕ Add New Move-In' }}
     </h3>
-
-  <!-- Move-In Form with Floating Labels -->
     <form
       (ngSubmit)="isEditing ? updateMoveIn() : addMoveIn()"
       #moveInForm="ngForm"
       class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6"
     >
-      <!-- Full Name -->
       <div class="relative">
         <input
           type="text"
@@ -40,8 +34,6 @@
           Full Name
         </label>
       </div>
-
-      <!-- Email -->
       <div class="relative">
         <input
           type="email"
@@ -57,8 +49,6 @@
           Email
         </label>
       </div>
-
-      <!-- Mobile Number -->
       <div class="relative">
         <input
           type="tel"
@@ -74,8 +64,6 @@
           Mobile Number
         </label>
       </div>
-
-      <!-- Move-In Date -->
       <div class="relative">
         <input
           type="date"
@@ -91,8 +79,6 @@
           Move-In Date
         </label>
       </div>
-
-      <!-- Building -->
       <div class="relative">
         <select
           [(ngModel)]="moveIn.BuildingId"
@@ -110,8 +96,6 @@
           Building
         </label>
       </div>
-
-      <!-- Unit -->
       <div class="relative">
         <select
           [(ngModel)]="moveIn.UnitId"
@@ -128,8 +112,6 @@
           Unit
         </label>
       </div>
-
-      <!-- Submit Button -->
       <div class="col-span-full text-right">
         <button
           type="submit"
@@ -139,55 +121,44 @@
         </button>
       </div>
     </form>
-
   </div>
 </div>
 
-<div class="p-6 bg-white rounded-xl shadow-md">
-  <!-- Header -->
-  <div class="mb-4 flex justify-between items-center">
-    <h2 class="text-2xl font-bold text-gray-700"> Move-In Records</h2>
+<div class="p-6 bg-gray-50 min-h-screen">
+  <div class="flex items-center justify-between mb-4">
+    <h1 class="text-2xl font-bold text-gray-800">Move-In Records</h1>
   </div>
-
-  <!-- Filters & Search -->
-  <div class="flex flex-wrap gap-4 mb-5">
-    <!-- Building Filter -->
-    
-      <!-- Building Filter -->
-      <div class="relative">
-        <input
-          type="text"
-          placeholder=" "
-          value="303"
-          class="peer block w-40 border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-        <label
-          class="absolute left-3 top-2 text-gray-400 text-sm peer-placeholder-shown:top-5 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-blue-500 peer-focus:text-sm transition-all"
-        >
-          Building
-        </label>
-      </div>
-
-      <!-- Unit Filter -->
-      <div class="relative">
-        <input
-          type="text"
-          placeholder=" "
-          [(ngModel)]="searchText"
-          (ngModelChange)="onSearchChange()"
-          class="peer block w-40 border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-        <label
-          class="absolute left-3 top-2 text-gray-400 text-sm peer-placeholder-shown:top-5 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-blue-500 peer-focus:text-sm transition-all"
-        >
-          Unit
-        </label>
-      </div>
+  <div class="bg-white rounded-lg grid grid-cols-2 gap-5 mb-3 w-100">
+    <div class="relative">
+      <input
+        type="text"
+        placeholder=" "
+        value="303"
+        class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+      />
+      <label
+        class="absolute left-3 top-2 text-gray-400 text-sm peer-placeholder-shown:top-5 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-blue-500 peer-focus:text-sm transition-all"
+      >
+        Building
+      </label>
+    </div>
+    <div class="relative">
+      <input
+        type="text"
+        placeholder=" "
+        [(ngModel)]="searchText"
+        (ngModelChange)="onSearchChange()"
+        class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+      />
+      <label
+        class="absolute left-3 top-2 text-gray-400 text-sm peer-placeholder-shown:top-5 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-blue-500 peer-focus:text-sm transition-all"
+      >
+        Unit
+      </label>
+    </div>
   </div>
-
-  <!-- Move-In Table -->
-  <div class="overflow-x-auto">
-    <table class="min-w-full border border-gray-200 text-sm">
+  <div class="overflow-x-auto bg-gray-50">
+    <table class="min-w-full table-auto border-collapse">
       <thead class="bg-gray-100 text-gray-700">
         <tr>
           <th class="py-2 px-4 border-b text-left">Bldg. #</th>
@@ -230,8 +201,6 @@
     </table>
   </div>
 </div>
-
-<!-- Pagination Controls -->
 <div class="flex items-center justify-between mt-4">
   <div>
     Showing page {{ page }} of {{ totalPages }}

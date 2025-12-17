@@ -57,10 +57,12 @@ export class WaterReadingComponent {
     private toast: HotToastService
   ) {}
 
-  ngOnInit() {
-    this.loadBuildings();
-    this.loadUnits();
-    this.loadReadings();
+ ngOnInit() {
+    const now = new Date();
+
+    this.selectedMonth = now.getMonth() + 1;
+    this.selectedYear = now.getFullYear();
+    this.searchByBillingMonth();
   }
 
   /** 🔹 Load all buildings */
@@ -279,5 +281,37 @@ export class WaterReadingComponent {
         alert('❌ Failed to update consumption.');
       }
     }); 
+  }
+  searchByUnitNumber() {
+    if (!this.searchUnit) {
+      this.loadReadings();
+      return;
+    } 
+    this.waterService.searchByUnitNumber(this.searchUnit).subscribe({
+      next: (res) => {
+        console.log('Readings loaded by unit number:', res);
+        this.readings = res;
+      }
+      ,
+      error: (err) => {
+        console.error('Error loading readings by unit number:', err);
+      }
+    }); 
+  }
+  searchByBillingMonth() {
+    if (!this.selectedYear || !this.selectedMonth) {
+      this.loadReadings();
+      return;
+    }
+    const billingMonth = `${this.selectedYear}-${this.selectedMonth.toString().padStart(2, '0')}`;
+    this.waterService.searchByBillingMonth(billingMonth).subscribe({
+      next: (res) => {
+        console.log('Readings loaded by billing month:', res);
+        this.readings = res;
+      } ,
+      error: (err) => {
+        console.error('Error loading readings by billing month:', err);
+      }
+    });
   }
 }

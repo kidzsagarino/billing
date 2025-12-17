@@ -1,145 +1,140 @@
-<h1 class="mb-3 text-2xl font-bold">Billing Summary</h1>
-
-<!-- Text Input Group -->
-<div class="grid grid-cols-5 gap-4 mb-3 p-4 bg-white rounded-lg shadow-md">
-  <!-- Building Number -->
-   <!-- Building -->
-  <div class="relative">
-    <input
-      type="text"
-      placeholder=" "
-      value="303"
-      class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-    />
-    <label
-      class="absolute left-3 top-2 text-gray-400 text-sm peer-placeholder-shown:top-5 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-blue-500 peer-focus:text-sm transition-all"
-    >
-      Building
-    </label>
-  </div>
-
-  <!-- Unit Number -->
-  <div class="relative">
-    <input
-      type="text"
-      placeholder=" "
-      [(ngModel)]="searchTerm"
-      (ngModelChange)="search()"
-      class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-    />
-    <label
-      class="absolute left-3 top-2 text-gray-400 text-sm peer-placeholder-shown:top-5 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-blue-500 peer-focus:text-sm transition-all"
-    >
-      Unit #
-    </label>
-  </div>
-  <div class="relative">
-      <!-- Year Dropdown -->
-      <select
-        [(ngModel)]="selectedYear"
-        (ngModelChange)="loadBilling()"
-        class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
-      >
-        <option value="" disabled selected></option>
-        <option *ngFor="let y of years" [value]="y">{{ y }}</option>
-      </select>
-      <label
-        class="absolute left-3 top-2 text-gray-400 text-sm peer-focus:top-2 peer-focus:text-blue-500 peer-focus:text-sm transition-all"
-      >
-        Year
-      </label>
-  </div>
-  <!-- Month Dropdown -->
-    <div class="relative">
-      <select
-        [(ngModel)]="selectedMonth"
-        (ngModelChange)="loadBilling()"
-        class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
-      >
-        <option value="" disabled selected></option>
-        <option *ngFor="let m of months" [value]="m">{{ m }}</option>
-      </select>
-      <label
-        class="absolute left-3 top-2 text-gray-400 text-sm peer-focus:top-2 peer-focus:text-blue-500 peer-focus:text-sm transition-all"
-      >
-        Month
-      </label>
-    </div>
+<div class="p-6 bg-gray-50 min-h-screen">
+  <div class="flex items-center justify-between mb-4">
+    <h1 class="text-2xl font-bold text-gray-800">Billing Summary</h1>
     <div class="relative flex items-center justify-center">
 
-      <!-- Generate Billing -->
-      <button 
-        class="bg-blue-600 text-white font-semibold rounded-md px-5 py-2 shadow-sm hover:shadow-md hover:bg-blue-700 transition"
-        (click)="generateBilling()">
-        Generate Billing
-      </button>
+        <!-- Generate Billing -->
+        <button 
+          class="bg-blue-600 text-white font-semibold rounded-md px-5 py-2 shadow-sm hover:shadow-md hover:bg-blue-700 transition"
+          (click)="generateBilling()">
+          Generate Billing
+        </button>
 
-      <!-- Generate SOA
-      <button 
-        class="bg-teal-600 text-white font-semibold rounded-md px-5 py-2 shadow-sm hover:shadow-md hover:bg-teal-700 transition">
-        Generate SOA
-      </button> -->
+        <!-- Generate SOA
+        <button 
+          class="bg-teal-600 text-white font-semibold rounded-md px-5 py-2 shadow-sm hover:shadow-md hover:bg-teal-700 transition">
+          Generate SOA
+        </button> -->
 
-      <!-- Print -->
-      <!-- <button 
-        class="bg-white border border-red-500 text-red-500 font-semibold rounded-md px-5 py-2 shadow-sm hover:shadow-md hover:bg-red-50 transition"
-       >
-        Print
-      </button> -->
+        <!-- Print -->
+        <!-- <button 
+          class="bg-white border border-red-500 text-red-500 font-semibold rounded-md px-5 py-2 shadow-sm hover:shadow-md hover:bg-red-50 transition"
+        >
+          Print
+        </button> -->
 
+      </div>
+  </div>  
+  <div class="grid grid-cols-4 gap-4 mb-3 bg-white rounded-lg">
+    <div class="relative">
+      <input
+        type="text"
+        placeholder=" "
+        value="303"
+        class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+      />
+      <label
+        class="absolute left-3 top-2 text-gray-400 text-sm peer-placeholder-shown:top-5 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-blue-500 peer-focus:text-sm transition-all"
+      >
+        Building
+      </label>
     </div>
-</div>
+    <div class="relative">
+      <input
+        type="text"
+        placeholder=" "
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="search()"
+        class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+      />
+      <label
+        class="absolute left-3 top-2 text-gray-400 text-sm peer-placeholder-shown:top-5 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-blue-500 peer-focus:text-sm transition-all"
+      >
+        Unit #
+      </label>
+    </div>
+    <div class="relative">
+        <!-- Year Dropdown -->
+        <select
+          [(ngModel)]="selectedYear"
+          (ngModelChange)="loadBilling()"
+          class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
+        >
+          <option value="" disabled selected></option>
+          <option *ngFor="let y of years" [value]="y">{{ y }}</option>
+        </select>
+        <label
+          class="absolute left-3 top-2 text-gray-400 text-sm peer-focus:top-2 peer-focus:text-blue-500 peer-focus:text-sm transition-all"
+        >
+          Year
+        </label>
+    </div>
+    <!-- Month Dropdown -->
+      <div class="relative">
+        <select
+          [(ngModel)]="selectedMonth"
+          (ngModelChange)="loadBilling()"
+          class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
+        >
+          <option value="" disabled selected></option>
+          <option *ngFor="let m of months" [value]="m">{{ m }}</option>
+        </select>
+        <label
+          class="absolute left-3 top-2 text-gray-400 text-sm peer-focus:top-2 peer-focus:text-blue-500 peer-focus:text-sm transition-all"
+        >
+          Month
+        </label>
+      </div>
+      
+  </div>
 
+  <div class="overflow-x-auto bg-gray-50">
+    <table class="min-w-full table-auto border-collapse">
+      <thead class="bg-gray-100">
+        <tr class="bg-gray-100 text-left text-gray-700">
+          <th class="px-4 py-2 border">#</th>
+          <th class="px-4 py-2 border">Bldng #</th>
+          <th class="px-4 py-2 border">Unit #</th>
+          <th class="px-4 py-2 border">Billing Month</th>
+          <th class="px-4 py-2 border">Due Date</th>
+          <th class="px-4 py-2 border text-right">Condo Dues</th>
+          <th class="px-4 py-2 border text-right">Water Bill</th>
+          <th class="px-4 py-2 border text-right">Overdue</th>
+          <th class="px-4 py-2 border text-right">Penalty</th>
+          <th class="px-4 py-2 border text-right">Total</th>
+          <th class="px-4 py-2 border text-right">Paid</th>
+          <th class="px-4 py-2 border text-right">Balance</th>
+          <th class="px-4 py-2 border">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Loading row -->
+        <tr *ngIf="loading">
+          <td colspan="13" class="text-center p-4">Loading...</td>
+        </tr>
 
+        <!-- Billing rows -->
+        <tr *ngFor="let bill of billings; let i = index">
+          <td class="border px-4 py-2 text-center">{{ i + 1 }}</td>
+          <td class="border px-4 py-2">{{ bill.BuildingNumber }}</td>
+          <td class="border px-4 py-2">{{ bill.UnitNumber }}</td>
+          <td class="border px-4 py-2 text-center">{{ bill.BillingMonth }}</td>
+          <td class="border px-4 py-2 text-center">{{ bill.DueDate | date:'yyyy-MM-dd' }}</td>
+          <td class="border px-4 py-2 text-right">₱{{ bill.CondoDues | number:'1.2-2' }}</td>
+          <td class="border px-4 py-2 text-right">₱{{ bill.WaterBill | number:'1.2-2' }}</td>
+          <td class="border px-4 py-2 text-right">₱{{ bill.OverdueAmount | number:'1.2-2' }}</td>
+          <td class="border px-4 py-2 text-right">₱{{ bill.Penalty | number:'1.2-2' }}</td>
+          <td class="border px-4 py-2 text-right font-semibold">₱{{ bill.TotalAmount | number:'1.2-2' }}</td>
+          <td class="border px-4 py-2 text-right">₱{{ bill.PaidAmount | number:'1.2-2' }}</td>
+          <td class="border px-4 py-2 text-right text-red-600">₱{{ bill.Balance | number:'1.2-2' }}</td>
+          <td class="border px-4 py-2 text-center">{{ bill.Status }}</td>
+        </tr>
 
-<!-- Owner Detailed Billing -->
-<div class="overflow-x-auto p-4 border rounded-lg bg-gray-50 shadow-sm">
-  <table class="min-w-full table-auto border-collapse">
-    <thead class="bg-gray-100">
-      <tr>
-        <th class="px-4 py-2 border">#</th>
-        <th class="px-4 py-2 border">Bldng #</th>
-        <th class="px-4 py-2 border">Unit #</th>
-        <th class="px-4 py-2 border">Billing Month</th>
-        <th class="px-4 py-2 border">Due Date</th>
-        <th class="px-4 py-2 border text-right">Condo Dues</th>
-        <th class="px-4 py-2 border text-right">Water Bill</th>
-        <th class="px-4 py-2 border text-right">Overdue</th>
-        <th class="px-4 py-2 border text-right">Penalty</th>
-        <th class="px-4 py-2 border text-right">Total</th>
-        <th class="px-4 py-2 border text-right">Paid</th>
-        <th class="px-4 py-2 border text-right">Balance</th>
-        <th class="px-4 py-2 border">Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Loading row -->
-      <tr *ngIf="loading">
-        <td colspan="13" class="text-center p-4">Loading...</td>
-      </tr>
-
-      <!-- Billing rows -->
-      <tr *ngFor="let bill of billings; let i = index">
-        <td class="border px-4 py-2 text-center">{{ i + 1 }}</td>
-        <td class="border px-4 py-2">{{ bill.BuildingNumber }}</td>
-        <td class="border px-4 py-2">{{ bill.UnitNumber }}</td>
-        <td class="border px-4 py-2 text-center">{{ bill.BillingMonth }}</td>
-        <td class="border px-4 py-2 text-center">{{ bill.DueDate | date:'yyyy-MM-dd' }}</td>
-        <td class="border px-4 py-2 text-right">₱{{ bill.CondoDues | number:'1.2-2' }}</td>
-        <td class="border px-4 py-2 text-right">₱{{ bill.WaterBill | number:'1.2-2' }}</td>
-        <td class="border px-4 py-2 text-right">₱{{ bill.OverdueAmount | number:'1.2-2' }}</td>
-        <td class="border px-4 py-2 text-right">₱{{ bill.Penalty | number:'1.2-2' }}</td>
-        <td class="border px-4 py-2 text-right font-semibold">₱{{ bill.TotalAmount | number:'1.2-2' }}</td>
-        <td class="border px-4 py-2 text-right">₱{{ bill.PaidAmount | number:'1.2-2' }}</td>
-        <td class="border px-4 py-2 text-right text-red-600">₱{{ bill.Balance | number:'1.2-2' }}</td>
-        <td class="border px-4 py-2 text-center">{{ bill.Status }}</td>
-      </tr>
-
-      <!-- No records -->
-      <tr *ngIf="!loading && billings.length === 0">
-        <td colspan="13" class="text-center p-4 text-gray-500">No billing records found.</td>
-      </tr>
-    </tbody>
-  </table>
-
+        <!-- No records -->
+        <tr *ngIf="!loading && billings.length === 0">
+          <td colspan="13" class="text-center p-4 text-gray-500">No billing records found.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>

@@ -64,6 +64,11 @@ export class BillingRunComponent {
   ) {}
 
   ngOnInit() {
+    const now = new Date();
+
+    this.selectedMonth = now.getMonth() + 1;
+    this.selectedYear = now.getFullYear();
+    
     this.loadBilling();
   }
 
