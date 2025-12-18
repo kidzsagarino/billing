@@ -1,4 +1,3 @@
-import { sequelize } from '../config/db';
 import { Unit } from './Unit';
 import { MoveIn } from './MoveIn';
 import { Billing } from './Billing';
@@ -26,4 +25,4 @@ WaterReading.belongsTo(Unit, { foreignKey: 'UnitId', as: 'unit' });
 Unit.hasMany(Payment, { foreignKey: 'UnitId', as: 'payments' });
 Payment.belongsTo(Unit, { foreignKey: 'UnitId', as: 'unit' });
 
-export { sequelize, Unit, MoveIn, Billing, WaterReading, Building, Payment };
+export {Unit, MoveIn, Billing, WaterReading, Building, Payment };
