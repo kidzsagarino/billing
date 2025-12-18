@@ -2,7 +2,8 @@
    "type": "module",
    "scripts": {
       "dev": "tsx watch src/server.ts",
-      "build": "tsc"
+      "build": "tsc",
+      "start": "node dist/server.js"
    },
    "dependencies": {
       "@fastify/cors": "^11.1.0",
