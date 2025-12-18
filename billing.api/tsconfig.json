@@ -8,6 +8,7 @@
     "outDir": "dist"
   },
     "include": [
+      "src/**/*.ts",
       "src/server.ts", 
       "src/routes/**/*.ts", 
       "src/models/**/*.ts", 
