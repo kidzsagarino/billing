@@ -7,4 +7,12 @@
     "skipLibCheck": true,
     "outDir": "dist"
   },
+    "include": [
+      "src/server.ts", 
+      "src/routes/**/*.ts", 
+      "src/models/**/*.ts", 
+      "src/plugins/**/*.ts", 
+      "config/**/*.ts", 
+      "src/controllers/**/*.ts", 
+      "src/types/**/*.ts"],
 }

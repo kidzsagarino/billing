@@ -20,6 +20,6 @@ export default fp(async (fastify) => {
     fastify.decorate('sequelize', sequelize)
 
     fastify.addHook('onClose', async () => {
-        await fastify.sequelize.close()
+        await sequelize.close()
     })
 })

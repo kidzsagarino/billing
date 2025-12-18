@@ -27,7 +27,11 @@ app.register(waterReadingRoutes, { prefix: '/api/water' });
 app.register(paymentRoutes, { prefix: '/api/payments' });
 app.register(userRoutes, { prefix: '/api/users' });
 
-app.register(fastifyEnv, {
+
+
+const start = async () => {
+
+  await app.register(fastifyEnv, {
   dotenv: true,
   schema: {
     type: 'object',
@@ -54,7 +58,6 @@ app.register(fastifyEnv, {
 
 app.register(fp);
 
-const start = async () => {
   try {
     
     // Start server
@@ -66,5 +69,4 @@ const start = async () => {
   }
 };
 
-// Start the server
 start();
