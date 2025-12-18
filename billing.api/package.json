@@ -2,7 +2,7 @@
    "type": "module",
    "scripts": {
       "dev": "tsx watch src/server.ts",
-      "build": "tsc -p tsconfig.json"
+      "build": "tsc"
    },
    "dependencies": {
       "@fastify/cors": "^11.1.0",
