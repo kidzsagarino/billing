@@ -27,7 +27,7 @@ app.register(waterReadingRoutes, { prefix: '/api/water' });
 app.register(paymentRoutes, { prefix: '/api/payments' });
 app.register(userRoutes, { prefix: '/api/users' });
 
-await app.register(fastifyEnv, {
+app.register(fastifyEnv, {
   dotenv: true,
   schema: {
     type: 'object',
