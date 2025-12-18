@@ -123,12 +123,11 @@
     </form>
   </div>
 </div>
-
 <div class="p-6 bg-gray-50 min-h-screen">
   <div class="flex items-center justify-between mb-4">
     <h1 class="text-2xl font-bold text-gray-800">Move-In Records</h1>
   </div>
-  <div class="bg-white rounded-lg grid grid-cols-2 gap-5 mb-3 w-100">
+  <div class="grid grid-cols-2 gap-2 mb-3 bg-white rounded-lg">
     <div class="relative">
       <input
         type="text"
@@ -159,8 +158,8 @@
   </div>
   <div class="overflow-x-auto bg-gray-50">
     <table class="min-w-full table-auto border-collapse">
-      <thead class="bg-gray-100 text-gray-700">
-        <tr>
+      <thead class="bg-gray-100">
+        <tr  class="bg-gray-100 text-left text-gray-700">
           <th class="py-2 px-4 border-b text-left">Bldg. #</th>
           <th class="py-2 px-4 border-b text-left">Unit #</th>
           <th class="py-2 px-4 border-b text-left">Full Name</th>
@@ -190,8 +189,6 @@
             </button>
           </td>
         </tr>
-
-        <tr *ngIf="filteredMoveIns().length === 0">
         <tr *ngIf="filteredMoveIns().length === 0">
           <td colspan="7" class="text-center py-3 text-gray-500">
             No records found.
@@ -200,22 +197,22 @@
       </tbody>
     </table>
   </div>
-</div>
-<div class="flex items-center justify-between mt-4">
-  <div>
-    Showing page {{ page }} of {{ totalPages }}
-    ({{ total }} records)
-  </div>
-  <div class="flex items-center gap-2">
-    <button (click)="onPageChange(page - 1)" [disabled]="page === 1" class="px-3 py-1 rounded border bg-gray-100">Prev</button>
-    <span>Page {{ page }}</span>
-    <button (click)="onPageChange(page + 1)" [disabled]="page >= totalPages" class="px-3 py-1 rounded border bg-gray-100">Next</button>
-    <select [(ngModel)]="pageSize" (change)="onPageSizeChange(pageSize)" class="ml-2 border rounded px-2 py-1">
-      <option [value]="5">5</option>
-      <option [value]="10">10</option>
-      <option [value]="20">20</option>
-      <option [value]="50">50</option>
-    </select>
-    <span>per page</span>
+  <div class="flex items-center justify-between mt-4">
+    <div>
+      Showing page {{ page }} of {{ totalPages }}
+      ({{ total }} records)
+    </div>
+    <div class="flex items-center gap-2">
+      <button (click)="onPageChange(page - 1)" [disabled]="page === 1" class="px-3 py-1 rounded border bg-gray-100">Prev</button>
+      <span>Page {{ page }}</span>
+      <button (click)="onPageChange(page + 1)" [disabled]="page >= totalPages" class="px-3 py-1 rounded border bg-gray-100">Next</button>
+      <select [(ngModel)]="pageSize" (change)="onPageSizeChange(pageSize)" class="ml-2 border rounded px-2 py-1">
+        <option [value]="5">5</option>
+        <option [value]="10">10</option>
+        <option [value]="20">20</option>
+        <option [value]="50">50</option>
+      </select>
+      <span>per page</span>
+    </div>
   </div>
 </div>
