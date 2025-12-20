@@ -68,7 +68,7 @@ export class BillingRunComponent {
 
     this.selectedMonth = now.getMonth() + 1;
     this.selectedYear = now.getFullYear();
-    
+
     this.loadBilling();
   }
 
@@ -97,8 +97,7 @@ export class BillingRunComponent {
         this.loading = false;
       },
       error: (err) => {
-        alert(err.message || 'Error loading billing data');
-        console.error('Failed to load billing:', err);
+        this.toast.error(err.message || 'Error loading billing data');
         this.loading = false;
       }
     });
@@ -123,7 +122,7 @@ export class BillingRunComponent {
           this.billings = data.data;
         },
         error: (err) => {
-          console.error('Error searching billing records:', err);
+          this.toast.error('Error searching billing records:', err);
         }
       });
     }

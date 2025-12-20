@@ -5,6 +5,7 @@ import { MoveInService } from '../../services/move-in.service';
 import { BuildingService } from '../../services/building.service';
 import { UnitService } from '../../services/unit.service';
 import { UnitFilterPipe } from './unit-filter.pipe';
+import { HotToastService } from '@ngxpert/hot-toast';
 
 @Component({
   selector: 'app-movein',
@@ -37,7 +38,8 @@ export class MoveInComponent {
   constructor(
     private moveInService: MoveInService,
     private buildingService: BuildingService,
-    private unitService: UnitService
+    private unitService: UnitService,
+    private toast: HotToastService
   ) {}
 
   ngOnInit() {
@@ -54,7 +56,7 @@ export class MoveInComponent {
         this.moveIns = res.data;
         this.total = res.total;
       },
-      error: (err) => console.error('Error loading move-ins:', err),
+      error: (err) => this.toast.error('Error loading move-ins:', err),
     });
   }
 
@@ -62,14 +64,14 @@ export class MoveInComponent {
   loadUnits(): void {
     this.unitService.getUnitsByBuilding(this.selectedBuilding).subscribe({
       next: (data) => (this.units = data),
-      error: (err) => console.error('Error loading units:', err),
+      error: (err) => this.toast.error('Error loading units:', err),
     });
   }
 
   loadBuildings() {
     this.buildingService.getAll().subscribe({
       next: (data) => (this.buildings = data),
-      error: (err) => console.error('Error loading buildings:', err),
+      error: (err) => this.toast.error('Error loading buildings:', err),
     });
   }
 
@@ -77,7 +79,7 @@ export class MoveInComponent {
    if (this.selectedBuilding) {
     this.unitService.getUnitsByBuilding(this.selectedBuilding).subscribe({
       next: (data) => (this.filteredUnits = data),
-      error: (err) => console.error('Error loading units:', err),
+      error: (err) => this.toast.error('Error loading units:', err),
       });
     } else {
       this.filteredUnits = [];
@@ -88,7 +90,7 @@ export class MoveInComponent {
     if (this.moveIn.BuildingId) {
       this.unitService.getUnitsByBuilding(this.moveIn.BuildingId).subscribe({
         next: (data) => (this.formUnits = data),
-        error: (err) => console.error('Error loading form units:', err),
+        error: (err) => this.toast.error('Error loading form units:', err),
       });
     } else {
       this.formUnits = [];
@@ -97,30 +99,27 @@ export class MoveInComponent {
   addMoveIn() {
     this.moveInService.create(this.moveIn).subscribe({
       next: () => {
-        alert('✅ Move-in added!');
+        this.toast.success('✅ Move-in added!');
         this.resetForm();
         this.loadMoveIns();
       },
       error: (err) => {
-        console.error('Error saving move-in:', err);
-        alert('❌ Failed to save move-in.');
+        this.toast.error('❌ Failed to save move-in.');
       },
     });
   }
 
   updateMoveIn() {
-    console.log(this.moveIn.Id);
     this.moveInService.update(this.moveIn.Id, this.moveIn).subscribe({
       next: () => {
-        alert('✅ Move-in updated successfully!');
+        this.toast.success('✅ Move-in updated successfully!');
         this.closeModal();
         this.loadMoveIns();
         this.isEditing = false;
         this.resetForm();
       },
       error: (err) => {
-        console.error('Error updating move-in:', err);
-        alert('❌ Failed to update move-in.');
+        this.toast.error('Error updating move-in:', err);
       },
     });
   }
@@ -173,7 +172,7 @@ export class MoveInComponent {
           this.moveIns = res;
           this.total = res.length;
         },
-        error: (err) => console.error('Error searching move-ins:', err),
+        error: (err) => this.toast.error('Error searching move-ins:', err),
       });
     } else {
       this.loadMoveIns();

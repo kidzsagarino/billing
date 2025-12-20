@@ -7,15 +7,26 @@ import { BillingRunComponent } from './features/billing-run/billing-run.componen
 import { PaymentsComponent } from './features/payments/payments.component';
 import { WaterReadingComponent } from './features/water-reading/water-reading.component';
 import { Routes } from '@angular/router';
+import { authGuard } from './auth/auth.guard';
+import { LoginComponent } from './features/login/login.component';
+import { AppShellComponent } from './app-shell.component';
 
 export const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
-  { path: 'dashboard', component: DashboardComponent },
-  { path: 'moveins', component: MoveInComponent },
-  { path: 'units', component: UnitsComponent },
-  { path: 'invoices', component: InvoicesComponent },
-  { path: 'billing-run', component: BillingRunComponent },
-  { path: 'payments', component: PaymentsComponent },
-  {path: 'water-reading', component: WaterReadingComponent},
-  { path: '**', redirectTo: 'dashboard' }
+  // Routes inside AppShell
+  {
+    path: '',
+    component: AppShellComponent,
+    canActivate: [authGuard], // protect all children by default
+    children: [
+      { path: 'dashboard', component: DashboardComponent },
+      { path: 'moveins', component: MoveInComponent },
+      { path: 'units', component: UnitsComponent },
+      { path: 'invoices', component: InvoicesComponent },
+      { path: 'billing-run', component: BillingRunComponent },
+      { path: 'payments', component: PaymentsComponent },
+      { path: 'water-reading', component: WaterReadingComponent }
+    ]
+  },
+
+  { path: 'login', component: LoginComponent },
 ];

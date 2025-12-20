@@ -9,6 +9,8 @@ import moveinRoutes from './routes/movein.routes';
 import waterReadingRoutes from './routes/water-reading.routes';
 import paymentRoutes from './routes/payment.routes';
 import userRoutes from './routes/user.routes';
+import { authPlugin } from './plugins/auth';
+import fastifyJwt from '@fastify/jwt';
 
 const app: FastifyInstance = Fastify({ logger: true });
 
@@ -17,6 +19,12 @@ app.register(cors, {
   origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 });
+
+app.register(fastifyJwt, {
+  secret: process.env.JWT_SECRET || 'default_secret',
+});
+
+app.register(authPlugin);
 
 // Register routes with API prefix
 app.register(billingRoutes, { prefix: '/api/billing' });
@@ -46,7 +54,6 @@ const start = async () => {
     properties: {
       PORT: { type: 'number', default: 3000 },
       JWT_SECRET: { type: 'string' },
-
       DB_HOST: { type: 'string' },
       DB_USER: { type: 'string' },
       DB_PASSWORD: { type: 'string' },

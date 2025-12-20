@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, ElementRef, Query, QueryList, ViewChildren } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { WaterService } from '../../services/water.service';
 import { BuildingService } from '../../services/building.service';
@@ -50,6 +50,8 @@ export class WaterReadingComponent {
   editValue: number | null = null;
   originalValue: number | null = null;
 
+  @ViewChildren('readingInput') readingInputs!: QueryList<ElementRef>;
+
   constructor(
     private waterService: WaterService,
     private buildingService: BuildingService,
@@ -69,7 +71,7 @@ export class WaterReadingComponent {
   loadBuildings() {
     this.buildingService.getAll().subscribe({
       next: (res) => (this.buildings = res),
-      error: (err) => console.error('Error loading buildings:', err)
+      error: (err) => this.toast.error('Error loading buildings:', err)
     });
   }
 
@@ -77,7 +79,7 @@ export class WaterReadingComponent {
   loadUnits() {
     this.unitService.getAllUnits().subscribe({
       next: (res) => (this.units = res),
-      error: (err) => console.error('Error loading units:', err)
+      error: (err) => this.toast.error('Error loading units:', err)
     });
   }
 
@@ -155,8 +157,7 @@ export class WaterReadingComponent {
         this.loadReadings();
       },
       error: (err) => {
-        console.error('Error saving reading:', err);
-        alert('❌ Failed to save water reading.');
+        this.toast.error('❌ Failed to save water reading.');
       }
     });
   }
@@ -188,7 +189,7 @@ export class WaterReadingComponent {
     if (this.reading.buildingNumber) {
       this.unitService.getUnitsByBuilding(this.reading.buildingNumber).subscribe({
         next: (res) => (this.filteredUnits = res),
-        error: (err) => console.error('Error loading units for building:', err)
+        error: (err) => this.toast.error('Error loading units for building:', err)
       });
     } else {
       this.filteredUnits = [];
@@ -196,18 +197,6 @@ export class WaterReadingComponent {
   }
 
   onSearchChange() {
-    // this.page = 1;
-    // if (this.searchText.trim()) {
-    //   this.moveInService.search(this.searchText.trim()).subscribe({
-    //     next: (res) => {
-    //       this.moveIns = res;
-    //       this.total = res.length;
-    //     },
-    //     error: (err) => console.error('Error searching move-ins:', err),
-    //   });
-    // } else {
-    //   this.loadMoveIns();
-    // }
   }
 
   loadReadingForBillingMonth(){
@@ -216,10 +205,8 @@ export class WaterReadingComponent {
     }).subscribe({
       next: () => { 
         this.loadReadings();
-      }
-      ,
+      },
       error: (err) => {
-        console.error('Error loading readings for billing month:', err);
         this.toast.error(err.error.message || '❌ Failed to load readings for billing month.');
       }
     });
@@ -229,6 +216,7 @@ export class WaterReadingComponent {
     this.editingIndex = index;
     this.editValue = currentValue;
     this.originalValue = currentValue;
+    //this.readingInputs.toArray()[index].nativeElement.focus();
   }
     
   isEditing(index: number) {
@@ -247,6 +235,7 @@ export class WaterReadingComponent {
     this.updateConsumption(reading.Id, this.editValue ?? 0);
 
     this.cancelEdit();
+    this.goNextElement(index);
   }
 
   cancelEdit() {
@@ -265,20 +254,16 @@ export class WaterReadingComponent {
 
   selectText(event: FocusEvent) {
     const input = event.target as HTMLInputElement;
-    // Wait for DOM to render before selecting (important)
     setTimeout(() => input.select(), 0);
   }
 
-  // Example API call
   updateConsumption(id: string, newValue: number) {
-    // Replace with your actual service method
     this.waterService.updateReading(id, { Consumption: newValue }).subscribe({
       next: () => {
        
       },
       error: (err) => {
-        console.error('Error updating consumption:', err);
-        alert('❌ Failed to update consumption.');
+        this.toast.error('❌ Failed to update consumption.');
       }
     }); 
   }
@@ -289,12 +274,11 @@ export class WaterReadingComponent {
     } 
     this.waterService.searchByUnitNumber(this.searchUnit).subscribe({
       next: (res) => {
-        console.log('Readings loaded by unit number:', res);
         this.readings = res;
       }
       ,
       error: (err) => {
-        console.error('Error loading readings by unit number:', err);
+        this.toast.error('Error loading readings by unit number:', err);
       }
     }); 
   }
@@ -306,12 +290,16 @@ export class WaterReadingComponent {
     const billingMonth = `${this.selectedYear}-${this.selectedMonth.toString().padStart(2, '0')}`;
     this.waterService.searchByBillingMonth(billingMonth).subscribe({
       next: (res) => {
-        console.log('Readings loaded by billing month:', res);
         this.readings = res;
       } ,
       error: (err) => {
-        console.error('Error loading readings by billing month:', err);
+        this.toast.error('Error loading readings by billing month:', err);
       }
     });
   }
+
+  goNextElement(currentIndex: number) {
+    console.log(this.readingInputs.toArray()[currentIndex + 1].nativeElement);
+  }
+  
 }

@@ -1,36 +1,6 @@
 <div class="flex h-screen bg-gray-100">
-  <!-- Sidebar -->
-  <aside
-    [ngClass]="sidebarOpen ? 'w-64' : 'w-16'"
-    class="bg-white border-r border-gray-200 transition-all duration-300"
-  >
-    <div class="p-4 font-bold text-xl border-b border-gray-200">
-       <button class="ml-auto mr-2" (click)="toggleSidebar()">
-        ☰
-      </button>
-      <span *ngIf="sidebarOpen">Billing Manager</span>
-    </div>
-
-    <nav class="mt-4 flex flex-col">
-      <!-- <a routerLink="/dashboard" class="px-4 py-2 hover:bg-gray-200 rounded" (click)="closeSidebar()">
-        <span *ngIf="sidebarOpen">Dashboard</span>
-      </a> -->
-      <a routerLink="/moveins" class="px-4 py-2 hover:bg-gray-200 rounded" (click)="closeSidebar()">
-        <span *ngIf="sidebarOpen">Move-ins</span>
-      </a>
-      
-      <a routerLink="/billing-run" class="px-4 py-2 hover:bg-gray-200 rounded" (click)="closeSidebar()">
-        <span *ngIf="sidebarOpen">Billing Run</span>
-      </a>
-      <a routerLink="/payments" class="px-4 py-2 hover:bg-gray-200 rounded" (click)="closeSidebar()">
-        <span *ngIf="sidebarOpen">Payments</span>
-      </a>
-       <a routerLink="/water-reading" class="px-4 py-2 hover:bg-gray-200 rounded" (click)="closeSidebar()">
-        <span *ngIf="sidebarOpen">Water Readings</span>
-      </a>
-    </nav>
-  </aside>
-
+  
+  <app-app-nav></app-app-nav>
   <!-- Main content -->
   <main class="flex-1 overflow-auto">
     <router-outlet></router-outlet>

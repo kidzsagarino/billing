@@ -9,6 +9,7 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
     declare PasswordHash: string;
     declare CreatedAt: Date;
     declare UpdatedAt: Date;
+    declare Role: number;
 }
 
 User.init(
@@ -38,6 +39,10 @@ User.init(
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW,
         },
+        Role: {
+            type: DataTypes.NUMBER,
+            allowNull: false,
+        }
     },
     {
         sequelize,

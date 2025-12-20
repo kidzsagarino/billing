@@ -29,14 +29,14 @@ export class UnitsComponent {
   ];
 
   addUnit() {
-    console.log('Add Unit clicked');
+    
   }
 
   editUnit(unit: Unit) {
-    console.log('Edit Unit:', unit);
+    
   }
 
   deleteUnit(unit: Unit) {
-    console.log('Delete Unit:', unit);
+    
   }
 }

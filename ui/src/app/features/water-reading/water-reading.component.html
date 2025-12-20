@@ -101,11 +101,10 @@
           <td class="p-3 border-b">{{ item.unit.building.BuildingNumber }}</td>
           <td class="p-3 border-b">{{ item.unit.UnitNumber }}</td>
           <td class="p-3 border-b">{{ item.BillingMonth }}</td>
-         <td class="p-3 border-b text-right" (click)="startEdit(i, item.Consumption)">
+         <td class="p-3 border-b text-right" (click)="startEdit(i, item.Consumption)" #readingInput>
             <ng-container *ngIf="!isEditing(i); else editInput">
               {{ item.Consumption }}
             </ng-container>
-
             <ng-template #editInput>
               <input
                 type="number"

@@ -5,16 +5,16 @@ import { PaymentController } from '../controllers/payment.controller';
 export default async function paymentRoutes(fastify: FastifyInstance) {
   const controller = new PaymentController();
 
-  fastify.get("/", controller.getAll);
+  fastify.get("/", { preHandler: fastify.authenticate }, controller.getAll);
 
   fastify.post("/", {
-    preHandler: validateFields(['UnitNumber', 'PaymentDate', 'Amount', 'ARNumber', 'PaymentType', 'RefNumber', 'BillingMonth'])
+    preHandler: [validateFields(['UnitNumber', 'PaymentDate', 'Amount', 'ARNumber', 'PaymentType', 'BillingMonth']), fastify.authenticate],
   }, controller.create);
 
   fastify.put("/:id", {
-    preHandler: validateFields(['UnitNumber', 'PaymentDate', 'Amount', 'ARNumber', 'PaymentType', 'RefNumber', 'BillingMonth'])
-  } ,controller.update);
+    preHandler: [validateFields(['UnitNumber', 'PaymentDate', 'Amount', 'ARNumber', 'PaymentType', 'BillingMonth']), fastify.authenticate],
+  }, controller.update);
 
-  fastify.post("/searchByUnit", controller.searchByUnitNumber);
-  fastify.post("/searchByBillingMonth", controller.searchByBillingMonth);
+  fastify.post("/searchByUnit", { preHandler: fastify.authenticate }, controller.searchByUnitNumber);
+  fastify.post("/searchByBillingMonth", { preHandler: fastify.authenticate }, controller.searchByBillingMonth);
 }

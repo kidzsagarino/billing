@@ -1,0 +1,35 @@
+<aside
+    [ngClass]="sidebarOpen ? 'w-64' : 'w-16'"
+    class="bg-white border-r border-gray-200 transition-all duration-300"
+  >
+    <div class="p-4 font-bold text-xl border-b border-gray-200">
+       <button class="ml-auto mr-2" (click)="toggleSidebar()">
+        ☰
+      </button>
+      <span *ngIf="sidebarOpen">Billing Manager</span>
+    </div>
+
+    <nav class="mt-4 flex flex-col">
+      <!-- <a routerLink="/dashboard" class="px-4 py-2 hover:bg-gray-200 rounded" (click)="closeSidebar()">
+        <span *ngIf="sidebarOpen">Dashboard</span>
+      </a> -->
+      <a routerLink="/moveins" class="px-4 py-2 hover:bg-gray-200 rounded" (click)="closeSidebar()">
+        <span *ngIf="sidebarOpen">Move-ins</span>
+      </a>
+      
+      <a routerLink="/billing-run" class="px-4 py-2 hover:bg-gray-200 rounded" (click)="closeSidebar()">
+        <span *ngIf="sidebarOpen">Billing Run</span>
+      </a>
+      <a routerLink="/payments" class="px-4 py-2 hover:bg-gray-200 rounded" (click)="closeSidebar()">
+        <span *ngIf="sidebarOpen">Payments</span>
+      </a>
+       <a routerLink="/water-reading" class="px-4 py-2 hover:bg-gray-200 rounded" (click)="closeSidebar()">
+        <span *ngIf="sidebarOpen">Water Readings</span>
+      </a>
+    </nav>
+    <nav class="mt-4 flex flex-col">
+        <a class="px-4 py-2 hover:bg-gray-200 rounded mt-auto" (click)="logout()">
+            <span *ngIf="sidebarOpen">Logout</span>
+        </a>
+    </nav>
+  </aside>

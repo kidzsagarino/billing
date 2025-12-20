@@ -1,24 +1,23 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
+import { environment } from "../../env/env";
 
 @Injectable({ providedIn: 'root' })
 export class LoginService {
     
     constructor(private httpClient: HttpClient) {}
 
-    private apiUrl = 'http://localhost:3000/api/users';
+    private apiUrl = `${environment.apiUrl}/users/login`;
 
-    private isAuthenticated = false;
     
-
-    login(username: string, password: string) {
-        return this.httpClient.post<{ success: boolean }>(`${this.apiUrl}/login`, { username, password });  
+    login(email: string, password: string) {
+        return this.httpClient.post<{ success: boolean }>(`${this.apiUrl}`, { email, password });  
     }
 
     logout(): void {
-        this.isAuthenticated = false;
+        localStorage.removeItem('billing.authToken');
     }   
     isLoggedIn(): boolean {
-        return this.isAuthenticated;
-    }   
+        return !!localStorage.getItem('billing.authToken');
+    }
 }

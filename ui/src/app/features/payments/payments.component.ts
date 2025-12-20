@@ -70,12 +70,11 @@ export class PaymentsComponent {
   loadPayments() {
     this.paymentService.getAllPayments().subscribe({
       next: (res) => {
-        console.log('Payments loaded:', res);
         this.payments = res;
       }
       ,
       error: (err) => {
-        console.error('Error loading payments:', err);
+        this.toast.error('Error loading payments:', err);
       }
     });
   }
@@ -89,7 +88,7 @@ export class PaymentsComponent {
         this.moveInName = res.FullName || '';
       } ,
       error: (err) => {
-        console.error('Error loading move-in name:', err);
+        this.toast.error('Error loading move-in name:', err);
       }
     });
   } 
@@ -104,7 +103,7 @@ export class PaymentsComponent {
     this.payment.BillingMonth = `${this.payment.BillingYear}-${this.payment.BillingMonth.toString().padStart(2, '0')}`;
     this.paymentService.createPayment(this.payment).subscribe({
       next: (res) => {
-        console.log('Payment created successfully:',  res); 
+        this.toast.success('Payment created successfully:',  res); 
         this.loadPayments();
       }
       ,
@@ -137,12 +136,12 @@ export class PaymentsComponent {
     this.payment.BillingMonth = `${this.payment.BillingYear}-${this.payment.BillingMonth.toString().padStart(2, '0')}`;
     this.paymentService.updatePayment(this.payment.Id, this.payment).subscribe({
       next: (res: any) => {
-        console.log('Payment updated successfully:',  res); 
+        this.toast.success('Payment updated successfully:',  res);
         this.loadPayments();
       }
       ,
       error: (err: any) => {
-        console.error('Error updating payment:', err);
+        this.toast.error('Error updating payment:', err);
       }
     });
     this.closeModal();
@@ -155,12 +154,11 @@ export class PaymentsComponent {
     }
     this.paymentService.searchByUnitNumber(this.searchUnit).subscribe({
       next: (res) => {
-        console.log('Payments loaded by unit number:', res);
         this.payments = res;
       }
       ,
       error: (err) => {
-        console.error('Error loading payments by unit number:', err);
+        this.toast.error('Error loading payments by unit number:', err);
       }
     });
   }
@@ -172,11 +170,10 @@ export class PaymentsComponent {
     const billingMonth = `${this.selectedYear}-${this.selectedMonth.toString().padStart(2, '0')}`;
     this.paymentService.searchByBillingMonth(billingMonth).subscribe({
       next: (res) => {
-        console.log('Payments loaded by billing month:', res);
         this.payments = res;
       } ,
       error: (err) => {
-        console.error('Error loading payments by billing month:', err);
+        this.toast.error('Error loading payments by billing month:', err);
       }
     }); 
   }
