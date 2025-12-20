@@ -12,5 +12,14 @@ declare module 'fastify' {
       DB_NAME: string;
       DB_PORT: number;
     };
+    // Add Sequelize and models here
+    sequelize: Sequelize;
+    Unit: typeof Unit;
+    MoveIn: typeof MoveIn;
+    Billing: typeof Billing;
+    WaterReading: typeof WaterReading;
+    Payment: typeof Payment;
+    User: typeof User;
+    Building: typeof Building;
   }
 }

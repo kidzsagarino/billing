@@ -1,12 +1,7 @@
-import { Model, DataTypes, InferAttributes, InferCreationAttributes, CreationOptional, HasManyGetAssociationsMixin } from 'sequelize';
+import { Model, DataTypes, InferAttributes, InferCreationAttributes, CreationOptional, Sequelize } from 'sequelize';
 
-import { sequelize } from '../config/db';
-
-export class MoveIn extends Model<
-  InferAttributes<MoveIn>,
-  InferCreationAttributes<MoveIn>
-> {
-  declare Id: string;
+export class MoveIn extends Model<InferAttributes<MoveIn>, InferCreationAttributes<MoveIn>> {
+  declare Id: CreationOptional<string>;
   declare FullName: string;
   declare Email: string;
   declare Mobile: string;
@@ -14,23 +9,62 @@ export class MoveIn extends Model<
   declare MoveInDate: Date;
   declare MoveOutDate: Date | null;
   declare Status: string;
-  declare CreatedAt: Date;
-  declare UpdatedAt: Date;
-
+  declare CreatedAt: CreationOptional<Date>;
+  declare UpdatedAt: CreationOptional<Date>;
 }
 
-MoveIn.init(
-  {
-    Id: { type: DataTypes.CHAR(36), primaryKey: true },
-    FullName: DataTypes.STRING,
-    Email: DataTypes.STRING,
-    Mobile: DataTypes.STRING,
-    UnitId: DataTypes.STRING,
-    MoveInDate: DataTypes.DATE,
-    MoveOutDate: DataTypes.DATE,
-    Status: DataTypes.STRING,
-    CreatedAt: DataTypes.DATE,
-    UpdatedAt: DataTypes.DATE,
-  },
-  { sequelize, tableName: 'moveins' }
-);
+// Factory function to initialize the model with a Sequelize instance
+export function initMoveIn(sequelize: Sequelize) {
+  MoveIn.init(
+    {
+      Id: {
+        type: DataTypes.CHAR(36),
+        primaryKey: true,
+        defaultValue: DataTypes.UUIDV4,
+      },
+      FullName: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      Email: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      Mobile: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      UnitId: {
+        type: DataTypes.CHAR(36),
+        allowNull: true,
+      },
+      MoveInDate: {
+        type: DataTypes.DATE,
+        allowNull: false,
+      },
+      MoveOutDate: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      Status: {
+        type: DataTypes.STRING,
+        defaultValue: 'Active',
+      },
+      CreatedAt: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+      },
+      UpdatedAt: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+      },
+    },
+    {
+      sequelize: sequelize, // ✅ use the passed Sequelize instance
+      tableName: 'moveins',
+      timestamps: false,
+    }
+  );
+
+  return MoveIn;
+}

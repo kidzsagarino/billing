@@ -53,46 +53,44 @@
         Unit #
       </label>
     </div>
-    <div class="relative">
-        <!-- Year Dropdown -->
-        <select
-          [(ngModel)]="selectedYear"
-          (ngModelChange)="loadBilling()"
-          class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
-        >
-          <option value="" disabled selected></option>
-          <option *ngFor="let y of years" [value]="y">{{ y }}</option>
-        </select>
-        <label
-          class="absolute left-3 top-2 text-gray-400 text-sm peer-focus:top-2 peer-focus:text-blue-500 peer-focus:text-sm transition-all"
-        >
-          Year
-        </label>
-    </div>
+    
     <!-- Month Dropdown -->
-      <div class="relative">
-        <select
-          [(ngModel)]="selectedMonth"
-          (ngModelChange)="loadBilling()"
-          class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
-        >
-          <option value="" disabled selected></option>
-          <option *ngFor="let m of months" [value]="m">{{ m }}</option>
-        </select>
-        <label
-          class="absolute left-3 top-2 text-gray-400 text-sm peer-focus:top-2 peer-focus:text-blue-500 peer-focus:text-sm transition-all"
-        >
-          Month
-        </label>
-      </div>
-      
+    <div class="relative">
+      <select
+        [(ngModel)]="selectedMonth"
+        (ngModelChange)="loadBilling()"
+        class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
+      >
+        <option value="" disabled selected></option>
+        <option *ngFor="let m of months" [value]="m">{{ m | monthYear }}</option>
+      </select>
+      <label
+        class="absolute left-3 top-2 text-gray-400 text-sm peer-focus:top-2 peer-focus:text-blue-500 peer-focus:text-sm transition-all"
+      >
+        Month
+      </label>
+    </div>
+    <div class="relative">
+      <!-- Year Dropdown -->
+      <select
+        [(ngModel)]="selectedYear"
+        (ngModelChange)="loadBilling()"
+        class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
+      >
+        <option value="" disabled selected></option>
+        <option *ngFor="let y of years" [value]="y">{{ y }}</option>
+      </select>
+      <label
+        class="absolute left-3 top-2 text-gray-400 text-sm peer-focus:top-2 peer-focus:text-blue-500 peer-focus:text-sm transition-all"
+      >
+        Year
+      </label>
+  </div>
   </div>
   <div class="overflow-x-auto bg-gray-50">
     <table class="min-w-full table-auto border-collapse">
       <thead class="bg-gray-100">
         <tr class="bg-gray-100 text-left text-gray-700">
-          <th class="px-4 py-2 border">#</th>
-          <th class="px-4 py-2 border">Bldng #</th>
           <th class="px-4 py-2 border">Unit #</th>
           <th class="px-4 py-2 border">Unit Owner</th>
           <th class="px-4 py-2 border">Billing Month</th>
@@ -110,22 +108,20 @@
       <tbody>
         <!-- Loading row -->
         <tr *ngIf="loading">
-          <td colspan="13" class="text-center p-4">Loading...</td>
+          <td colspan="12" class="text-center p-4">Loading...</td>
         </tr>
 
         <!-- Billing rows -->
         <tr *ngFor="let bill of billings; let i = index">
-          <td class="border px-2 py-2 text-center">{{ i + 1 }}</td>
-          <td class="border px-2 py-2 text-center">{{ bill.BuildingNumber }}</td>
           <td class="border px-2 py-2 text-center">{{ bill.UnitNumber }}</td>
           <td class="border px-2 py-2 text-left">{{ bill.FullName }}</td>
-          <td class="border px-2 py-2 text-center">{{ bill.BillingMonth }}</td>
-          <td class="border px-2 py-2 text-center">{{ bill.DueDate | date:'yyyy-MM-dd' }}</td>
+          <td class="border px-2 py-2 text-center">{{ bill.BillingMonth | monthYear }}</td>
+          <td class="border px-2 py-2 text-center">{{ bill.DueDate | date:'MMM, dd, yy' }}</td>
           <td class="border px-2 py-2 text-center">₱{{ bill.CondoDues | number:'1.2-2' }}</td>
           <td class="border px-2 py-2 text-center">₱{{ bill.WaterBill | number:'1.2-2' }}</td>
           <td class="border px-2 py-2 text-center">₱{{ bill.OverdueAmount | number:'1.2-2' }}</td>
           <td class="border px-2 py-2 text-center">₱{{ bill.Penalty | number:'1.2-2' }}</td>
-          <td class="border px-2 py-2 text-center font-semibold">₱{{ bill.TotalAmount | number:'1.2-2' }}</td>
+          <td class="border px-2 py-2 text-center">₱{{ bill.TotalAmount | number:'1.2-2' }}</td>
           <td class="border px-2 py-2 text-center">₱{{ bill.PaidAmount | number:'1.2-2' }}</td>
           <td
               class="border px-2 py-2 text-center"

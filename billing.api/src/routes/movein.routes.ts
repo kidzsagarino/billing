@@ -2,7 +2,7 @@ import { FastifyInstance } from 'fastify';
 import { MoveInController } from '../controllers/movein.controller';
 
 export default async function moveinRoutes(fastify: FastifyInstance) {
-  const controller = new MoveInController();
+  const controller = new MoveInController(fastify);
 
   fastify.get('/', { preHandler: fastify.authenticate }, controller.getAll);
   fastify.get('/search', { preHandler: fastify.authenticate }, controller.search);

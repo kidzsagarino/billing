@@ -47,7 +47,22 @@
       Unit
     </label>
   </div>
-
+  <!-- Month Dropdown -->
+  <div class="relative">
+    <select
+      [(ngModel)]="selectedMonth"
+      (ngModelChange)="searchByBillingMonth()"
+      class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
+    >
+      <option value="" disabled selected></option>
+      <option *ngFor="let m of months" [value]="m">{{ m | monthYear }}</option>
+    </select>
+    <label
+      class="absolute left-3 top-2 text-gray-400 text-sm peer-focus:top-2 peer-focus:text-blue-500 peer-focus:text-sm transition-all"
+    >
+      Month
+    </label>
+  </div>
   <!-- Year Dropdown -->
   <div class="relative">
     <select
@@ -64,31 +79,14 @@
       Year
     </label>
   </div>
-
-  <!-- Month Dropdown -->
-  <div class="relative">
-    <select
-      [(ngModel)]="selectedMonth"
-      (ngModelChange)="searchByBillingMonth()"
-      class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
-    >
-      <option value="" disabled selected></option>
-      <option *ngFor="let m of months" [value]="m">{{ m }}</option>
-    </select>
-    <label
-      class="absolute left-3 top-2 text-gray-400 text-sm peer-focus:top-2 peer-focus:text-blue-500 peer-focus:text-sm transition-all"
-    >
-      Month
-    </label>
-  </div>
 </div>
   <!-- Table -->
   <div class="overflow-x-auto bg-gray-50">
     <table class="min-w-full table-auto border-collapse">
       <thead class="bg-gray-100">
         <tr class="bg-gray-100 text-left text-gray-700">
-          <th class="p-3 border-b">Building #</th>
           <th class="p-3 border-b">Unit #</th>
+          <th class="p-3 border-b">Unit Owner</th>
           <th class="p-3 border-b">Month</th> 
           <th class="p-3 border-b text-right">Reading</th>
         </tr>
@@ -98,9 +96,9 @@
           *ngFor="let item of readings; let i = index"
           class="hover:bg-gray-50 transition"
         >
-          <td class="p-3 border-b">{{ item.unit.building.BuildingNumber }}</td>
           <td class="p-3 border-b">{{ item.unit.UnitNumber }}</td>
-          <td class="p-3 border-b">{{ item.BillingMonth }}</td>
+          <td class="p-3 border-b">{{ item.unit.moveins[0].FullName || 'Vacant' }}</td>
+          <td class="p-3 border-b">{{ item.BillingMonth | monthYear }}</td>
           <td class="p-3 border-b text-right">
               <input
                   #readingInput

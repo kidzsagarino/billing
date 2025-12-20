@@ -35,39 +35,35 @@ app.register(waterReadingRoutes, { prefix: '/api/water' });
 app.register(paymentRoutes, { prefix: '/api/payments' });
 app.register(userRoutes, { prefix: '/api/users' });
 
-
-
 const start = async () => {
 
   await app.register(fastifyEnv, {
-  dotenv: true,
-  schema: {
-    type: 'object',
-    required: [
-      'PORT',
-      'JWT_SECRET',
-      'DB_HOST',
-      'DB_USER',
-      'DB_PASSWORD',
-      'DB_NAME'
-    ],
-    properties: {
-      PORT: { type: 'number', default: 3000 },
-      JWT_SECRET: { type: 'string' },
-      DB_HOST: { type: 'string' },
-      DB_USER: { type: 'string' },
-      DB_PASSWORD: { type: 'string' },
-      DB_NAME: { type: 'string' },
-      DB_PORT: { type: 'number', default: 3306 }
+    dotenv: true,
+    schema: {
+      type: 'object',
+      required: [
+        'PORT',
+        'JWT_SECRET',
+        'DB_HOST',
+        'DB_USER',
+        'DB_PASSWORD',
+        'DB_NAME'
+      ],
+      properties: {
+        PORT: { type: 'number', default: 3000 },
+        JWT_SECRET: { type: 'string' },
+        DB_HOST: { type: 'string' },
+        DB_USER: { type: 'string' },
+        DB_PASSWORD: { type: 'string' },
+        DB_NAME: { type: 'string' },
+        DB_PORT: { type: 'number', default: 3306 }
+      }
     }
-  }
 });
 
 app.register(fp);
 
   try {
-    
-    // Start server
     await app.listen({ port: app.config.PORT })
     console.log('🚀 Fastify server running at http://localhost:3000');
   } catch (err) {

@@ -1,137 +1,162 @@
-import { Payment } from "../models/Payment";
-import { Billing, MoveIn, Unit } from "../models";
-import { v4 as uuidv4 } from "uuid";
+import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import { v4 as uuidv4 } from 'uuid';
 
 export class PaymentController {
-  getAll = async (request, reply) => {
-    const payments = await Payment.findAll({
-      include: [{
-        model: Unit,
-        as: 'unit',
-        include: [{
-          model: MoveIn,
-          as: 'moveins'
-        }],
-      }],
-    });
-    reply.code(200).send(payments);
-  };
+  private fastify: FastifyInstance;
 
-  create = async (request, reply) => {
-    const { UnitNumber, PaymentDate, Amount, ARNumber, PaymentType, RefNumber, BillingMonth } = request.body as any;
-    const unitId = await Unit.findOne({ where: { UnitNumber: UnitNumber } });
+  constructor(fastify: FastifyInstance) {
+    this.fastify = fastify;
+  }
 
-    if (!unitId) {
-      return reply.code(400).send({ error: 'Invalid Unit Number' });
+  // GET all payments
+  getAll = async (request: FastifyRequest, reply: FastifyReply) => {
+    try {
+      const payments = await this.fastify.Payment.findAll({
+        include: [
+          {
+            association: 'unit',
+            include: [
+              { association: 'moveins', required: false }
+            ],
+          },
+        ],
+      });
+      reply.code(200).send(payments);
+    } catch (error) {
+      console.error('Error fetching payments:', error);
+      reply.status(500).send({ error: 'Failed to fetch payments' });
     }
-
-    const payment = await Payment.create({
-      Id: uuidv4(),
-      UnitID: unitId ? unitId.Id : null,
-      PaymentDate,
-      Amount,
-      ARNumber,
-      PaymentType,
-      RefNumber,
-      BillingMonth
-    });
-
-    this.updateBillingPayment(unitId.Id, BillingMonth, Amount);
-
-    reply.code(200).send(payment);
   };
 
-  update = async (request, reply) => {
-    const { id } = request.params as { id: string };
-    const { UnitNumber, PaymentDate, Amount, ARNumber, PaymentType, RefNumber, BillingMonth } = request.body as any;
-    const payment = await Payment.findByPk(id);
-    if (!payment) return reply.status(404).send({ error: 'Payment not found' });
+  // CREATE payment
+  create = async (request: FastifyRequest, reply: FastifyReply) => {
+    try {
+      const { UnitNumber, PaymentDate, Amount, ARNumber, PaymentType, RefNumber, BillingMonth } =
+        request.body as any;
 
-    const unitId = await Unit.findOne({ where: { UnitNumber: UnitNumber } });
-    await payment.update({
-      UnitID: unitId ? unitId.Id : null,
-      PaymentDate,
-      Amount,
-      ARNumber,
-      PaymentType,
-      RefNumber,
-      BillingMonth
-    });
+      const unit = await this.fastify.Unit.findOne({ where: { UnitNumber } });
+      if (!unit) return reply.code(400).send({ error: 'Invalid Unit Number' });
 
-    this.updateBillingPayment(unitId.Id, BillingMonth, Amount);
-
-    reply.send(payment);
-  };
-
-  updateBillingPayment = async(unitId: string, billingMonth: string, amount: number) => {
-    const bill = await Billing.findOne({
-      where: {
-        UnitId: unitId,
-        BillingMonth: billingMonth,
-      },
-    });
-
-    if (bill) {
-
-      const totalPaid = await Payment.sum('Amount', {
-        where: {
-          UnitID: unitId,
-          BillingMonth: billingMonth,
-        },
+      const payment = await this.fastify.Payment.create({
+        Id: uuidv4(),
+        UnitID: unit.Id,
+        PaymentDate,
+        Amount,
+        ARNumber,
+        PaymentType,
+        RefNumber,
+        BillingMonth
       });
 
-      const totalAmount = Number(bill.TotalAmount) || 0;
+      await this.updateBillingPayment(unit.Id, BillingMonth);
 
-      const balance: number = totalAmount - amount;
+      reply.code(201).send(payment);
+    } catch (error) {
+      console.error('Error creating payment:', error);
+      reply.status(500).send({ error: 'Failed to create payment' });
+    }
+  };
 
-      let status = 'Unpaid';
+  // UPDATE payment
+  update = async (request: FastifyRequest, reply: FastifyReply) => {
+    try {
+      const { id } = request.params as { id: string };
+      const { UnitNumber, PaymentDate, Amount, ARNumber, PaymentType, RefNumber, BillingMonth } =
+        request.body as any;
 
-      if (balance <= 0) {
-        status = 'Paid';
-      } else {
-        status = 'PartiallyPaid';
-      }
+      const payment = await this.fastify.Payment.findByPk(id);
+      if (!payment) return reply.status(404).send({ error: 'Payment not found' });
 
-      await bill.update({
-        PaidAmount: totalPaid,
-        Balance: Number(balance),
-        Status: status,
+      const unit = await this.fastify.Unit.findOne({ where: { UnitNumber } });
+      if (!unit) return reply.code(400).send({ error: 'Invalid Unit Number' });
+
+      await payment.update({
+        UnitID: unit.Id,
+        PaymentDate,
+        Amount,
+        ARNumber,
+        PaymentType,
+        RefNumber,
+        BillingMonth
       });
-    }
-  }
-  searchByUnitNumber = async (request, reply) => {
-    const { UnitNumber } = request.body as { UnitNumber: string };
-    const unit = await Unit.findOne({ where: { UnitNumber: UnitNumber } });
-    if (!unit) {
-      return reply.code(200).send([]);
-    }
-    const payments = await Payment.findAll({ 
-      where: { UnitID: unit.Id },
-      include: [{
-        model: Unit,
-        as: 'unit',
-        include: [{
-          model: MoveIn,
-          as: 'moveins'
-        }],
-      }],
-    });
-    reply.code(200).send(payments);
-  }
 
-  searchByBillingMonth = async (request, reply) => {
-    const { BillingMonth } = request.body as { BillingMonth: string };
-    const payments = await Payment.findAll({ 
-      where: { BillingMonth: BillingMonth },
-      include: [{
-        model: Unit,
-        as: 'unit',
-        include: [{
-          model: MoveIn,
-          as: 'moveins'
-        }],
-      }],
+      await this.updateBillingPayment(unit.Id, BillingMonth);
+
+      reply.code(200).send(payment);
+    } catch (error) {
+      console.error('Error updating payment:', error);
+      reply.status(500).send({ error: 'Failed to update payment' });
+    }
+  };
+
+  // UPDATE corresponding billing after a payment
+  private updateBillingPayment = async (unitId: string, billingMonth: string) => {
+    const bill = await this.fastify.Billing.findOne({
+      where: { UnitId: unitId, BillingMonth: billingMonth }
     });
-    reply.code(200).send(payments);
-  }
+
+    if (!bill) return;
+
+    const totalPaid = await this.fastify.Payment.sum('Amount', {
+      where: { UnitID: unitId, BillingMonth: billingMonth }
+    });
+
+    const totalAmount = Number(bill.TotalAmount) || 0;
+    const balance = totalAmount - (totalPaid || 0);
+
+    let status: string = 'Unpaid';
+    if (balance <= 0) status = 'Paid';
+    else if (balance < totalAmount) status = 'PartiallyPaid';
+
+    await bill.update({
+      PaidAmount: totalPaid,
+      Balance: balance,
+      Status: status
+    });
+  };
+
+  // SEARCH payments by UnitNumber
+  searchByUnitNumber = async (request: FastifyRequest, reply: FastifyReply) => {
+    try {
+      const { UnitNumber } = request.body as { UnitNumber: string };
+      const unit = await this.fastify.Unit.findOne({ where: { UnitNumber } });
+      if (!unit) return reply.code(200).send([]);
+
+      const payments = await this.fastify.Payment.findAll({
+        where: { UnitID: unit.Id },
+        include: [
+          {
+            association: 'unit',
+            include: [{ association: 'moveins', required: false }]
+          }
+        ],
+      });
+
+      reply.code(200).send(payments);
+    } catch (error) {
+      console.error('Error searching payments by unit:', error);
+      reply.status(500).send({ error: 'Failed to search payments' });
+    }
+  };
+
+  // SEARCH payments by BillingMonth
+  searchByBillingMonth = async (request: FastifyRequest, reply: FastifyReply) => {
+    try {
+      const { BillingMonth } = request.body as { BillingMonth: string };
+      const payments = await this.fastify.Payment.findAll({
+        where: { BillingMonth },
+        include: [
+          {
+            association: 'unit',
+            include: [{ association: 'moveins', required: false }]
+          }
+        ],
+      });
+
+      reply.code(200).send(payments);
+    } catch (error) {
+      console.error('Error searching payments by month:', error);
+      reply.status(500).send({ error: 'Failed to search payments' });
+    }
+  };
 }

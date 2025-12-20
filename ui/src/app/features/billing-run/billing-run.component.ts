@@ -7,11 +7,10 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { BillingService } from '../../services/billing.service';
-
-import { BillingRecord } from '../../models/billing.model';
 import { HotToastService } from '@ngxpert/hot-toast';
+import { MonthYearPipe } from '../../pipes/month-year.pipe';
 
 export interface Billing {
   FullName: string;
@@ -39,22 +38,21 @@ export interface Billing {
     MatButtonModule,
     MatFormFieldModule,
     MatSelectModule,
-    MatInputModule
+    MatInputModule,
+    MonthYearPipe
   ],
   templateUrl: './billing-run.component.html',
   styleUrls: ['./billing-run.component.css']
 })
 export class BillingRunComponent {
   billings: Billing[] = [];
-  billingMonth: string = '2025-10'; // default month (can be changed by UI)
+  billingMonth: string = '2025-10';
   loading = false;
 
-    // Dropdown selections
   selectedYear: number = 2025;
   selectedMonth: number = 10;
   searchTerm: string = '';
 
-  // Year and month arrays for dropdowns
   years: number[] = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i); // last 5 years
   months: number[] = Array.from({ length: 12 }, (_, i) => i + 1);
 

@@ -6,12 +6,13 @@ import { BuildingService } from '../../services/building.service';
 import { UnitService } from '../../services/unit.service';
 import { HotToastService } from '@ngxpert/hot-toast';
 import { Observable } from 'rxjs';
+import { MonthYearPipe } from '../../pipes/month-year.pipe';
 
 @Component({
   selector: 'app-water-reading',
   styleUrls: ['./water-reading.component.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MonthYearPipe],
   templateUrl: './water-reading.component.html'
 })
 export class WaterReadingComponent {

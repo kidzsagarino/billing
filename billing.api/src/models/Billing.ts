@@ -5,12 +5,9 @@ import {
   InferCreationAttributes,
   CreationOptional,
   ForeignKey,
-  BelongsToGetAssociationMixin
+  Sequelize,
 } from 'sequelize';
-import { sequelize } from '../config/db';
 import { MoveIn } from './MoveIn';
-import { Unit } from './Unit';
-
 export class Billing extends Model<
   InferAttributes<Billing>,
   InferCreationAttributes<Billing>
@@ -33,73 +30,79 @@ export class Billing extends Model<
 
 }
 
-Billing.init(
-  {
-    Id: {
-      type: DataTypes.CHAR(36),
-      primaryKey: true,
-      defaultValue: DataTypes.UUIDV4,
+export function initBilling(sequelize: Sequelize){
+  Billing.init(
+    {
+      Id: {
+        type: DataTypes.CHAR(36),
+        primaryKey: true,
+        defaultValue: DataTypes.UUIDV4,
+      },
+      UnitId: {
+        type: DataTypes.CHAR(36),
+        allowNull: false,
+      },
+      MoveInId: {
+        type: DataTypes.CHAR(36),
+        allowNull: true,
+      },
+      BillingMonth: {
+        type: DataTypes.STRING(7),
+        allowNull: false,
+      },
+      DueDate: {
+        type: DataTypes.DATE,
+        allowNull: false,
+      },
+      CondoDues: {
+        type: DataTypes.DECIMAL(10, 3),
+        defaultValue: 2000.0,
+      },
+      WaterBill: {
+        type: DataTypes.DECIMAL(10, 3),
+        defaultValue: 0.0,
+      },
+      OverdueAmount: {
+        type: DataTypes.DECIMAL(10, 3),
+        defaultValue: 0.0,
+      },
+      Penalty: {
+        type: DataTypes.DECIMAL(10, 3),
+        defaultValue: 0.0,
+      },
+      TotalAmount: {
+        type: DataTypes.DECIMAL(10, 3),
+        defaultValue: 0.0,
+      },
+      PaidAmount: {
+        type: DataTypes.DECIMAL(10, 3),
+        defaultValue: 0.0,
+      },
+      Balance: {
+        type: DataTypes.DECIMAL(10, 3),
+        defaultValue: 0.00,
+      },
+      Status: {
+        type: DataTypes.STRING(20),
+        defaultValue: 'Unpaid',
+      },
+      CreatedAt: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+      },
+      UpdatedAt: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+      },
     },
-    UnitId: {
-      type: DataTypes.CHAR(36),
-      allowNull: false,
-    },
-    MoveInId: {
-      type: DataTypes.CHAR(36),
-      allowNull: true,
-    },
-    BillingMonth: {
-      type: DataTypes.STRING(7),
-      allowNull: false,
-    },
-    DueDate: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
-    CondoDues: {
-      type: DataTypes.DECIMAL(10, 3),
-      defaultValue: 2000.0,
-    },
-    WaterBill: {
-      type: DataTypes.DECIMAL(10, 3),
-      defaultValue: 0.0,
-    },
-    OverdueAmount: {
-      type: DataTypes.DECIMAL(10, 3),
-      defaultValue: 0.0,
-    },
-    Penalty: {
-      type: DataTypes.DECIMAL(10, 3),
-      defaultValue: 0.0,
-    },
-    TotalAmount: {
-      type: DataTypes.DECIMAL(10, 3),
-      defaultValue: 0.0,
-    },
-    PaidAmount: {
-      type: DataTypes.DECIMAL(10, 3),
-      defaultValue: 0.0,
-    },
-    Balance: {
-      type: DataTypes.DECIMAL(10, 3),
-      defaultValue: 0.00,
-    },
-    Status: {
-      type: DataTypes.STRING(20),
-      defaultValue: 'Unpaid',
-    },
-    CreatedAt: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-    },
-    UpdatedAt: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-    },
-  },
-  {
-    sequelize,
-    tableName: 'Billings',
-    timestamps: false,
-  }
-);
+    {
+      tableName: 'Billings',
+      timestamps: false,
+      sequelize: sequelize
+    }
+  );
+
+  
+  return Billing;
+}
+

@@ -1,6 +1,5 @@
-import { DataTypes, Model, Optional } from 'sequelize';
-import { sequelize } from '../config/db';
-// Define attributes
+import { DataTypes, Model, Optional, Sequelize, CreationOptional } from 'sequelize';
+
 interface WaterReadingAttributes {
   Id: string;
   UnitId: string;
@@ -15,84 +14,85 @@ interface WaterReadingAttributes {
   Consumption: number;
 }
 
-// Define optional fields for creation
+// Optional fields for creation
 type WaterReadingCreationAttributes = Optional<
   WaterReadingAttributes,
   'Id' | 'TotalAmount' | 'CreatedAt' | 'UpdatedAt'
 >;
 
-// Define class model
-class WaterReading
+export class WaterReading
   extends Model<WaterReadingAttributes, WaterReadingCreationAttributes>
   implements WaterReadingAttributes
 {
-  public Id!: string;
+  public Id!: CreationOptional<string>;
   public UnitId!: string;
   public BillingMonth!: string;
   public PreviousReading!: number;
   public CurrentReading!: number;
   public RatePerCubic!: number;
   public TotalAmount!: number;
-  public CreatedAt!: Date;
-  public UpdatedAt!: Date;
+  public CreatedAt!: CreationOptional<Date>;
+  public UpdatedAt!: CreationOptional<Date>;
   public ReadingDate!: Date;
   public Consumption!: number;
 }
 
-// Initialize model
-WaterReading.init(
-  {
-    Id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
-      primaryKey: true,
-    },
-    UnitId: {
-      type: DataTypes.CHAR(36),
-      allowNull: false,
-    },
-    BillingMonth: {
-      type: DataTypes.STRING(7), // e.g., "2025-10"
-      allowNull: false,
-    },
-    PreviousReading: {
-      type: DataTypes.DECIMAL(10, 2),
-      defaultValue: 0,
-    },
-    CurrentReading: {
-      type: DataTypes.DECIMAL(10, 2),
-      defaultValue: 0,
-    },
-    RatePerCubic: {
-      type: DataTypes.DECIMAL(10, 2),
-      defaultValue: 0,
-    },
-    TotalAmount: {
-      type: DataTypes.DECIMAL(10, 2),
-      defaultValue: 0,
-    },
-    CreatedAt: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-    },
-    UpdatedAt: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-    },
-    ReadingDate: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-    },
-    Consumption: {
+// Factory function to initialize the model
+export function initWaterReading(sequelize: Sequelize) {
+  WaterReading.init(
+    {
+      Id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true,
+      },
+      UnitId: {
+        type: DataTypes.CHAR(36),
+        allowNull: false,
+      },
+      BillingMonth: {
+        type: DataTypes.STRING(7),
+        allowNull: false,
+      },
+      PreviousReading: {
         type: DataTypes.DECIMAL(10, 2),
         defaultValue: 0,
+      },
+      CurrentReading: {
+        type: DataTypes.DECIMAL(10, 2),
+        defaultValue: 0,
+      },
+      RatePerCubic: {
+        type: DataTypes.DECIMAL(10, 2),
+        defaultValue: 0,
+      },
+      TotalAmount: {
+        type: DataTypes.DECIMAL(10, 2),
+        defaultValue: 0,
+      },
+      CreatedAt: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+      },
+      UpdatedAt: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+      },
+      ReadingDate: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+      },
+      Consumption: {
+        type: DataTypes.DECIMAL(10, 2),
+        defaultValue: 0,
+      },
     },
-  },
-  {
-    sequelize,
-    tableName: 'WaterReadings',
-    timestamps: false,
-  }
-);
+    {
+      sequelize, // ✅ use the passed Sequelize instance
+      tableName: 'WaterReadings',
+      timestamps: false,
+    }
+  );
 
-export default WaterReading;
+  return WaterReading;
+}

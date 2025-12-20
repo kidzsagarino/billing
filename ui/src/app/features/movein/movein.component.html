@@ -160,7 +160,6 @@
     <table class="min-w-full table-auto border-collapse">
       <thead class="bg-gray-100">
         <tr  class="bg-gray-100 text-left text-gray-700">
-          <th class="py-2 px-4 border-b text-left">Bldg. #</th>
           <th class="py-2 px-4 border-b text-left">Unit #</th>
           <th class="py-2 px-4 border-b text-left">Full Name</th>
           <th class="py-2 px-4 border-b text-left">Move-In Date</th>
@@ -174,10 +173,9 @@
           *ngFor="let movein of filteredMoveIns()"
           class="border-b hover:bg-gray-50"
         >
-          <td class="py-2 px-4">{{ movein.unit?.building.BuildingNumber || '-' }}</td>
           <td class="py-2 px-4">{{ movein.unit?.UnitNumber || '-' }}</td>
           <td class="py-2 px-4 font-medium">{{ movein.FullName }}</td>
-          <td class="py-2 px-4">{{ movein.MoveInDate | date: 'yyyy-MM-dd' }}</td>
+          <td class="py-2 px-4">{{ movein.MoveInDate | date: 'MMM, dd, yy' }}</td>
           <td class="py-2 px-4">{{ movein.Mobile }}</td>
           <td class="py-2 px-4">{{ movein.Email }}</td>
           <td class="py-2 px-4 text-center">

@@ -2,7 +2,7 @@ import { Unit } from './Unit';
 import { MoveIn } from './MoveIn';
 import { Billing } from './Billing';
 import { Building } from './Building';
-import WaterReading from './WaterReading';
+import { WaterReading } from './WaterReading';
 import { Payment } from './Payment';
 
 // Ensure associations exist

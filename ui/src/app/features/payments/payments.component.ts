@@ -6,11 +6,12 @@ import PaymentService from '../../services/payment.service';
 import { UnitService } from '../../services/unit.service';
 import { PaymentTypeOptions, PaymentType  } from '../../constants/paymenttype';
 import { HotToastService } from '@ngxpert/hot-toast';
+import { MonthYearPipe } from '../../pipes/month-year.pipe';
 
 @Component({
   selector: 'app-payments',
   standalone: true,
-  imports: [CommonModule, MatTableModule, FormsModule],
+  imports: [CommonModule, MatTableModule, FormsModule, MonthYearPipe],
   templateUrl: './payments.component.html',
   styleUrls: ['./payments.component.css']
 })

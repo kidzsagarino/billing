@@ -1,32 +1,34 @@
-import { Billing } from '../models/Billing';
-import { Unit } from '../models/Unit';
 import { v4 as uuidv4 } from 'uuid';
-import WaterReading from '../models/WaterReading';
-import { MoveIn, Payment } from '../models';
 import isOverDue from '../service/isOverDue';
+import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 
 export class BillingController {
+  private fastify: FastifyInstance;
 
-  private getDueDate = (billingMonth: string): Date => {
+  constructor(fastify: FastifyInstance) {
+    this.fastify = fastify;
+  }
+
+  private getDueDate(billingMonth: string): Date {
     const [year, month] = billingMonth.split('-').map(Number);
     const endOfMonth = new Date(year, month, 0);
     const dueDate = new Date(endOfMonth);
     dueDate.setDate(endOfMonth.getDate() + 7);
     return dueDate;
-  };
+  }
 
-  private getPrevMonthStr = (billingMonth: string): string => {
+  private getPrevMonthStr(billingMonth: string): string {
     const [year, month] = billingMonth.split('-').map(Number);
     const prevMonth = new Date(year, month - 2, 1);
     return `${prevMonth.getFullYear()}-${String(prevMonth.getMonth() + 1).padStart(2, '0')}`;
-  };
+  }
 
-  private async getUnits(): Promise<Unit[]> {
-    return Unit.findAll();
+  private async getUnits() {
+    return this.fastify.Unit.findAll();
   }
 
   private async getLastBill(unitId: string, prevMonthStr: string) {
-    return Billing.findOne({
+    return this.fastify.Billing.findOne({
       where: { UnitId: unitId, BillingMonth: prevMonthStr } as any,
       order: [['CreatedAt', 'DESC']],
     });
@@ -34,7 +36,7 @@ export class BillingController {
 
   private async getWaterReading(unitId: string, billingMonth: string) {
     return (
-      (await WaterReading.findOne({
+      (await this.fastify.WaterReading.findOne({
         where: { UnitId: unitId, BillingMonth: billingMonth },
       })) || { Consumption: 0 }
     );
@@ -48,25 +50,24 @@ export class BillingController {
       penalty = 200.0;
     } else {
       const lastBillPaymentDate: string =
-        (await Payment.max('PaymentDate', {
+        (await this.fastify.Payment.max('PaymentDate', {
           where: {
             UnitID: unit.Id,
             BillingMonth: prevMonthStr,
           },
         })) || undefined;
 
-      if (lastBillPaymentDate) {
-        if (isOverDue(lastBillPaymentDate, lastBill!.DueDate)) {
-          penalty = 200.0;
-        }
+      if (lastBillPaymentDate && isOverDue(lastBillPaymentDate, lastBill!.DueDate)) {
+        penalty = 200.0;
       }
     }
+
     return { penalty, overdueAmount };
   }
 
   private async getPaidAmount(unitId: string, billingMonth: string) {
     return (
-      (await Payment.sum('Amount', {
+      (await this.fastify.Payment.sum('Amount', {
         where: {
           UnitID: unitId,
           BillingMonth: billingMonth,
@@ -81,13 +82,13 @@ export class BillingController {
     return 'Unpaid';
   }
 
-  generate = async (request, reply) => {
+  generate = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const { billingMonth } = request.body as { billingMonth: string };
       const dueDate = this.getDueDate(billingMonth);
       const prevMonthStr = this.getPrevMonthStr(billingMonth);
 
-      const units: Unit[] = await this.getUnits();
+      const units = await this.getUnits();
 
       if (units.length === 0) {
         return reply.code(400).send({ error: 'No active unit found with assigned units.' });
@@ -96,20 +97,14 @@ export class BillingController {
       const bills: any[] = [];
 
       for (const unit of units) {
-        const alreadyExists = await Billing.findOne({
-          where: {
-            UnitId: unit.Id,
-            BillingMonth: billingMonth,
-          },
+        const alreadyExists = await this.fastify.Billing.findOne({
+          where: { UnitId: unit.Id, BillingMonth: billingMonth },
         });
 
         if (alreadyExists) continue;
 
-        const moveIn = await MoveIn.findOne({ where: { UnitId: unit.Id } });
-
-        if(moveIn && moveIn.FullName == ''){
-          continue;
-        }
+        const moveIn = await this.fastify.MoveIn.findOne({ where: { UnitId: unit.Id } });
+        if (moveIn && !moveIn.FullName) continue;
 
         const lastBill = await this.getLastBill(unit.Id, prevMonthStr);
         const lastWaterReading = await this.getWaterReading(unit.Id, prevMonthStr);
@@ -148,110 +143,47 @@ export class BillingController {
         return reply.status(400).send(`Billing records for ${billingMonth} already generated.`);
       }
 
-      await Billing.bulkCreate(bills);
+      await this.fastify.Billing.bulkCreate(bills);
 
-      reply.send({
-        message: `${bills.length} billing records generated for ${billingMonth}.`,
-      });
+      reply.send({ message: `${bills.length} billing records generated for ${billingMonth}.` });
     } catch (error) {
       console.error('Error generating billing:', error);
       reply.status(500).send({ error: 'Failed to generate billing records.' });
     }
   };
 
-  getByMonth = async (request, reply) => {
+  getByMonth = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const { billingMonth } = request.params as { billingMonth: string };
+      if (!billingMonth) return reply.status(400).send({ error: 'Billing month is required (format: YYYY-MM)' });
 
-      if (!billingMonth) {
-        return reply.status(400).send({ error: 'Billing month is required (format: YYYY-MM)' });
-      }
-
-      const bills = await Billing.findAll({
+      const bills = await this.fastify.Billing.findAll({
         where: { BillingMonth: billingMonth },
-        include: [
-          { 
-            association: 'unit', 
-            required: false, 
-            include: [
-              { association: 'building', required: false },
-              { association: 'moveins', required: false}
-            ] 
-          },
-        ],
-        order: [
-          [{ model: Unit, as: 'unit' }, 'FloorNumber', 'ASC'],
-          [{ model: Unit, as: 'unit' }, 'UnitNumber', 'ASC']
-        ],
-      });
-
-      if (bills.length === 0) {
-        return reply.send({ message: `No billing records found for ${billingMonth}`, status: 0 });
-      }
-      
-      const formatted = await Promise.all(
-        bills.map(async (bill: any) => ({
-          BillingId: bill.Id,
-          BillingMonth: bill.BillingMonth,
-          DueDate: bill.DueDate,
-          FullName: bill.unit?.moveins[0]?.FullName ?? "Vacant",
-          Email: bill.moveIn?.Email ?? "",
-          Mobile: bill.moveIn?.Mobile ?? "",
-          BuildingNumber: bill.unit?.building?.BuildingNumber ?? "",
-          UnitNumber: bill.unit?.UnitNumber ?? "",
-          CondoDues: bill.CondoDues,
-          WaterBill: bill.WaterBill,
-          OverdueAmount: bill.OverdueAmount,
-          Penalty: bill.Penalty,
-          TotalAmount: bill.TotalAmount,
-          PaidAmount: bill.PaidAmount,
-          Balance: bill.Balance,
-          Status: bill.Status,
-        }))
-      );
-
-      reply.send({
-        billingMonth,
-        totalRecords: formatted.length,
-        data: formatted,
-      });
-
-    } catch (error) {
-      console.error('Error fetching billing records:', error);
-      reply.status(500).send({ error: 'Failed to fetch billing records.' });
-    }
-  };
-
-  search = async (request, reply) => {
-    try {
-      const { q } = request.query as { q?: string };
-
-      const bills = await Billing.findAll({
-        where: {
-          '$unit.UnitNumber$': q.trim()
-        },
         include: [
           {
             association: 'unit',
             required: false,
-            include: [{ association: 'building', required: false }]
+            include: [
+              { association: 'building', required: false },
+              { association: 'moveins', required: false },
+            ],
           },
-          { association: 'moveIn', required: false }
         ],
         order: [
-        //   [{ model: Unit, as: 'unit' }, 'FloorNumber', 'ASC'],
-        //   [{ model: Unit, as: 'unit' }, 'UnitNumber', 'ASC']
-        ['CreatedAt', 'DESC']
-        ]
+          [{ model: this.fastify.Unit, as: 'unit' }, 'FloorNumber', 'ASC'],
+          [{ model: this.fastify.Unit, as: 'unit' }, 'UnitNumber', 'ASC'],
+        ],
       });
 
-      const formatted = await Promise.all(bills.map(async (bill: any) => ({
+      if (bills.length === 0) return reply.send({ message: `No billing records found for ${billingMonth}`, status: 0 });
+
+      const formatted = bills.map((bill: any) => ({
         BillingId: bill.Id,
         BillingMonth: bill.BillingMonth,
         DueDate: bill.DueDate,
-        FullName: bill.moveIn?.FullName ?? 'Vacant',
-        Email: bill.moveIn?.Email ?? '',
-        Mobile: bill.moveIn?.Mobile ?? '',
+        FullName: bill.unit?.moveins?.[0]?.FullName ?? 'Vacant',
+        Email: bill.unit?.moveins?.[0]?.Email ?? '',
+        Mobile: bill.unit?.moveins?.[0]?.Mobile ?? '',
         BuildingNumber: bill.unit?.building?.BuildingNumber ?? '',
         UnitNumber: bill.unit?.UnitNumber ?? '',
         CondoDues: bill.CondoDues,
@@ -261,14 +193,56 @@ export class BillingController {
         TotalAmount: bill.TotalAmount,
         PaidAmount: bill.PaidAmount,
         Balance: bill.Balance,
-        Status: bill.Status
-      })));
+        Status: bill.Status,
+      }));
 
-      reply.send({
-        totalRecords: formatted.length,
-        data: formatted,
+      reply.send({ billingMonth, totalRecords: formatted.length, data: formatted });
+    } catch (error) {
+      console.error('Error fetching billing records:', error);
+      reply.status(500).send({ error: 'Failed to fetch billing records.' });
+    }
+  };
+
+  search = async (request: FastifyRequest, reply: FastifyReply) => {
+    try {
+      const { q } = request.query as { q?: string };
+      if (!q) return reply.send({ totalRecords: 0, data: [] });
+
+      const bills = await this.fastify.Billing.findAll({
+        where: { '$unit.UnitNumber$': q.trim() },
+        include: [
+          {
+            association: 'unit',
+            required: false,
+            include: [
+              { association: 'building', required: false },
+              { association: 'moveins', required: false },
+            ],
+          },
+        ],
+        order: [['CreatedAt', 'DESC']],
       });
 
+      const formatted = bills.map((bill: any) => ({
+        BillingId: bill.Id,
+        BillingMonth: bill.BillingMonth,
+        DueDate: bill.DueDate,
+        FullName: bill.unit?.moveins?.[0]?.FullName ?? 'Vacant',
+        Email: bill.unit?.moveins?.[0]?.Email ?? '',
+        Mobile: bill.unit?.moveins?.[0]?.Mobile ?? '',
+        BuildingNumber: bill.unit?.building?.BuildingNumber ?? '',
+        UnitNumber: bill.unit?.UnitNumber ?? '',
+        CondoDues: bill.CondoDues,
+        WaterBill: bill.WaterBill,
+        OverdueAmount: bill.OverdueAmount,
+        Penalty: bill.Penalty,
+        TotalAmount: bill.TotalAmount,
+        PaidAmount: bill.PaidAmount,
+        Balance: bill.Balance,
+        Status: bill.Status,
+      }));
+
+      reply.send({ totalRecords: formatted.length, data: formatted });
     } catch (error) {
       console.error('Error fetching billing records:', error);
       reply.status(500).send({ error: 'Failed to fetch billing records.' });

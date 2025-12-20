@@ -3,7 +3,7 @@ import { validateFields } from '../hooks/fieldValidator';
 import { PaymentController } from '../controllers/payment.controller';
 
 export default async function paymentRoutes(fastify: FastifyInstance) {
-  const controller = new PaymentController();
+  const controller = new PaymentController(fastify);
 
   fastify.get("/", { preHandler: fastify.authenticate }, controller.getAll);
 
