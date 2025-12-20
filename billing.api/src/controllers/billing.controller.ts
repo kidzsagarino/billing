@@ -147,7 +147,6 @@ export class BillingController {
 
       reply.send({ message: `${bills.length} billing records generated for ${billingMonth}.` });
     } catch (error) {
-      console.error('Error generating billing:', error);
       reply.status(500).send({ error: 'Failed to generate billing records.' });
     }
   };
@@ -198,7 +197,6 @@ export class BillingController {
 
       reply.send({ billingMonth, totalRecords: formatted.length, data: formatted });
     } catch (error) {
-      console.error('Error fetching billing records:', error);
       reply.status(500).send({ error: 'Failed to fetch billing records.' });
     }
   };
@@ -244,7 +242,6 @@ export class BillingController {
 
       reply.send({ totalRecords: formatted.length, data: formatted });
     } catch (error) {
-      console.error('Error fetching billing records:', error);
       reply.status(500).send({ error: 'Failed to fetch billing records.' });
     }
   };

@@ -48,7 +48,6 @@ export class WaterReadingController {
         data: rows,
       });
     } catch (err) {
-      console.error(err);
       reply.status(500).send({ error: 'Failed to fetch water readings' });
     }
   };
@@ -73,7 +72,6 @@ export class WaterReadingController {
 
       reply.send({ totalRecords: count, data: rows });
     } catch (err) {
-      console.error(err);
       reply.status(500).send({ error: 'Failed to fetch water readings' });
     }
   };
@@ -133,7 +131,6 @@ export class WaterReadingController {
 
       reply.status(200).send({ message: 'Water reading saved successfully', data: newReading });
     } catch (err) {
-      console.error(err);
       reply.status(500).send({ error: 'Failed to save water reading' });
     }
   };
@@ -159,7 +156,6 @@ export class WaterReadingController {
 
       reply.send({ message: 'Water reading updated successfully' });
     } catch (err) {
-      console.error(err);
       reply.status(500).send({ error: 'Failed to update water reading' });
     }
   };
@@ -188,7 +184,6 @@ export class WaterReadingController {
         reply.status(400).send({ message: 'All water readings for this billing month already exist' });
       }
     } catch (err) {
-      console.error(err);
       reply.status(500).send({ error: 'Failed to load water readings for billing month' });
     }
   };
@@ -203,7 +198,6 @@ export class WaterReadingController {
       await reading.update({ Consumption });
       reply.send({ message: 'Consumption updated successfully' });
     } catch (err) {
-      console.error(err);
       reply.status(500).send({ error: 'Failed to update consumption' });
     }
   };
