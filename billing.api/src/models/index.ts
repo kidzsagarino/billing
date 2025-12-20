@@ -9,9 +9,6 @@ import { Payment } from './Payment';
 Unit.hasMany(Billing, { foreignKey: 'UnitId', as: 'billings' });
 Billing.belongsTo(Unit, { foreignKey: 'UnitId', as: 'unit' });
 
-MoveIn.hasMany(Billing, { foreignKey: 'MoveInId', as: 'billings' });
-Billing.belongsTo(MoveIn, { foreignKey: 'MoveInId', as: 'moveIn' });
-
 Building.hasMany(Unit, { foreignKey: 'BuildingId', as: 'units' });
 Unit.belongsTo(Building, { foreignKey: 'BuildingId', as: 'building' });
 

@@ -170,8 +170,14 @@ export class BillingController {
       const bills = await Billing.findAll({
         where: { BillingMonth: billingMonth },
         include: [
-          { association: 'unit', required: false, include: [{ association: 'building', required: false }] },
-          { association: 'moveIn', required: false },
+          { 
+            association: 'unit', 
+            required: false, 
+            include: [
+              { association: 'building', required: false },
+              { association: 'moveins', required: false}
+            ] 
+          },
         ],
         order: [
           [{ model: Unit, as: 'unit' }, 'FloorNumber', 'ASC'],
@@ -182,13 +188,13 @@ export class BillingController {
       if (bills.length === 0) {
         return reply.send({ message: `No billing records found for ${billingMonth}`, status: 0 });
       }
-
+      
       const formatted = await Promise.all(
         bills.map(async (bill: any) => ({
           BillingId: bill.Id,
           BillingMonth: bill.BillingMonth,
           DueDate: bill.DueDate,
-          FullName: bill.moveIn?.FullName ?? "Vacant",
+          FullName: bill.unit?.moveins[0]?.FullName ?? "Vacant",
           Email: bill.moveIn?.Email ?? "",
           Mobile: bill.moveIn?.Mobile ?? "",
           BuildingNumber: bill.unit?.building?.BuildingNumber ?? "",

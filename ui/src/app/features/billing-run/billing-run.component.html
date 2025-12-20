@@ -94,6 +94,7 @@
           <th class="px-4 py-2 border">#</th>
           <th class="px-4 py-2 border">Bldng #</th>
           <th class="px-4 py-2 border">Unit #</th>
+          <th class="px-4 py-2 border">Unit Owner</th>
           <th class="px-4 py-2 border">Billing Month</th>
           <th class="px-4 py-2 border">Due Date</th>
           <th class="px-4 py-2 border text-right">Condo Dues</th>
@@ -114,19 +115,28 @@
 
         <!-- Billing rows -->
         <tr *ngFor="let bill of billings; let i = index">
-          <td class="border px-4 py-2 text-center">{{ i + 1 }}</td>
-          <td class="border px-4 py-2">{{ bill.BuildingNumber }}</td>
-          <td class="border px-4 py-2">{{ bill.UnitNumber }}</td>
-          <td class="border px-4 py-2 text-center">{{ bill.BillingMonth }}</td>
-          <td class="border px-4 py-2 text-center">{{ bill.DueDate | date:'yyyy-MM-dd' }}</td>
-          <td class="border px-4 py-2 text-right">₱{{ bill.CondoDues | number:'1.2-2' }}</td>
-          <td class="border px-4 py-2 text-right">₱{{ bill.WaterBill | number:'1.2-2' }}</td>
-          <td class="border px-4 py-2 text-right">₱{{ bill.OverdueAmount | number:'1.2-2' }}</td>
-          <td class="border px-4 py-2 text-right">₱{{ bill.Penalty | number:'1.2-2' }}</td>
-          <td class="border px-4 py-2 text-right font-semibold">₱{{ bill.TotalAmount | number:'1.2-2' }}</td>
-          <td class="border px-4 py-2 text-right">₱{{ bill.PaidAmount | number:'1.2-2' }}</td>
-          <td class="border px-4 py-2 text-right text-red-600">₱{{ bill.Balance | number:'1.2-2' }}</td>
-          <td class="border px-4 py-2 text-center">{{ bill.Status }}</td>
+          <td class="border px-2 py-2 text-center">{{ i + 1 }}</td>
+          <td class="border px-2 py-2 text-center">{{ bill.BuildingNumber }}</td>
+          <td class="border px-2 py-2 text-center">{{ bill.UnitNumber }}</td>
+          <td class="border px-2 py-2 text-left">{{ bill.FullName }}</td>
+          <td class="border px-2 py-2 text-center">{{ bill.BillingMonth }}</td>
+          <td class="border px-2 py-2 text-center">{{ bill.DueDate | date:'yyyy-MM-dd' }}</td>
+          <td class="border px-2 py-2 text-center">₱{{ bill.CondoDues | number:'1.2-2' }}</td>
+          <td class="border px-2 py-2 text-center">₱{{ bill.WaterBill | number:'1.2-2' }}</td>
+          <td class="border px-2 py-2 text-center">₱{{ bill.OverdueAmount | number:'1.2-2' }}</td>
+          <td class="border px-2 py-2 text-center">₱{{ bill.Penalty | number:'1.2-2' }}</td>
+          <td class="border px-2 py-2 text-center font-semibold">₱{{ bill.TotalAmount | number:'1.2-2' }}</td>
+          <td class="border px-2 py-2 text-center">₱{{ bill.PaidAmount | number:'1.2-2' }}</td>
+          <td
+              class="border px-2 py-2 text-center"
+              [ngClass]="{
+                'text-red-600': bill.Balance > 0,
+                'text-gray-700': bill.Balance <= 0
+              }"
+            >
+              ₱{{ bill.Balance | number:'1.2-2' }}
+          </td>
+          <td class="border px-2 py-2 text-center">{{ bill.Status }}</td>
         </tr>
 
         <!-- No records -->

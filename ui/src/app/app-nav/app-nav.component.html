@@ -1,5 +1,5 @@
 <aside
-    [ngClass]="sidebarOpen ? 'w-64' : 'w-16'"
+    [ngClass]="sidebarOpen ? 'w-56' : 'w-16'"
     class="bg-white border-r border-gray-200 transition-all duration-300"
   >
     <div class="p-4 font-bold text-xl border-b border-gray-200">
@@ -28,7 +28,7 @@
       </a>
     </nav>
     <nav class="mt-4 flex flex-col">
-        <a class="px-4 py-2 hover:bg-gray-200 rounded mt-auto" (click)="logout()">
+        <a href="" class="px-4 py-2 hover:bg-gray-200 rounded mt-auto" (click)="logout()">
             <span *ngIf="sidebarOpen">Logout</span>
         </a>
     </nav>
