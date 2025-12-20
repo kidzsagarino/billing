@@ -5,6 +5,7 @@ import { WaterService } from '../../services/water.service';
 import { BuildingService } from '../../services/building.service';
 import { UnitService } from '../../services/unit.service';
 import { HotToastService } from '@ngxpert/hot-toast';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-water-reading',
@@ -22,7 +23,6 @@ export class WaterReadingComponent {
 
   selectedYear: number = 2025;
   selectedMonth: number = 10;
-  // Year and month arrays for dropdowns
   years: number[] = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i); // last 5 years
   months: number[] = Array.from({ length: 12 }, (_, i) => i + 1);
 
@@ -66,24 +66,18 @@ export class WaterReadingComponent {
     this.selectedYear = now.getFullYear();
     this.searchByBillingMonth();
   }
-
-  /** 🔹 Load all buildings */
   loadBuildings() {
     this.buildingService.getAll().subscribe({
       next: (res) => (this.buildings = res),
       error: (err) => this.toast.error('Error loading buildings:', err)
     });
   }
-
-  /** 🔹 Load all units */
   loadUnits() {
     this.unitService.getAllUnits().subscribe({
       next: (res) => (this.units = res),
       error: (err) => this.toast.error('Error loading units:', err)
     });
   }
-
-  /** 🔹 Load water readings from API with pagination & filters */
   loadReadings() {
     const billingMonth = `${this.selectedYear}-${this.selectedMonth.toString().padStart(2,'0')}`;
     this.waterService.getReadings(billingMonth).subscribe({
@@ -97,8 +91,6 @@ export class WaterReadingComponent {
       error: (err) => this.toast.error('Error loading water readings: ' + (err.error?.error || err.message || 'Unknown error'))
     });
   }
-
-  // /** 🔹 Open add/edit modal */
   openModal(reading?: any) {
     // if (reading) {
     //   this.reading = { ...reading };
@@ -122,8 +114,6 @@ export class WaterReadingComponent {
   closeModal() {
     this.showModal = false;
   }
-
-  /** 🔹 Compute consumption and total */
   computeConsumption() {
     this.reading.consumption = Math.max(0, this.reading.currentReading - this.reading.previousReading);
     this.computeTotal();
@@ -132,10 +122,7 @@ export class WaterReadingComponent {
   computeTotal() {
     this.reading.totalAmount = +(this.reading.consumption * this.reading.ratePerCubic).toFixed(2);
   }
-
-  /** 🔹 Save reading */
   saveReading() {
-    // Convert date to YYYY-MM for billingMonth
     const dateStr = this.reading.readingDate;
     const billingMonth = dateStr ? dateStr.substring(0, 7) : '';
 
@@ -161,8 +148,6 @@ export class WaterReadingComponent {
       }
     });
   }
-
-  /** 🔹 Pagination helpers */
   goToPage(page: number) {
     if (page < 1) return;
     this.page = page;
@@ -179,7 +164,6 @@ export class WaterReadingComponent {
     return this.pageSize ? Math.ceil(this.total / this.pageSize) : 1;
   }
 
-  /** 🔹 Filter change triggers */
   onFilterChange() {
     this.page = 1;
     this.loadReadings();
@@ -216,7 +200,6 @@ export class WaterReadingComponent {
     this.editingIndex = index;
     this.editValue = currentValue;
     this.originalValue = currentValue;
-    //this.readingInputs.toArray()[index].nativeElement.focus();
   }
     
   isEditing(index: number) {
@@ -232,10 +215,15 @@ export class WaterReadingComponent {
     const reading = this.readings[index];
     reading.Consumption = this.editValue;
 
-    this.updateConsumption(reading.Id, this.editValue ?? 0);
-
-    this.cancelEdit();
-    this.goNextElement(index);
+    this.updateConsumption(reading.Id, this.editValue ?? 0).subscribe({
+      next: () => {
+        this.cancelEdit();
+        this.goNextElement(index);
+      },
+      error: (err) => {
+        this.toast.error('❌ Failed to update consumption.');
+      }
+    })
   }
 
   cancelEdit() {
@@ -245,8 +233,9 @@ export class WaterReadingComponent {
   }
 
   onKeydown(event: KeyboardEvent, index: number) {
-    if (event.key === 'Enter') {
-      (event.target as HTMLElement).blur();
+
+    if (event.key === 'Enter' || event.key == 'Tab') {
+      this.finishEdit(index);
     } else if (event.key === 'Escape') {
       this.cancelEdit();
     }
@@ -257,15 +246,8 @@ export class WaterReadingComponent {
     setTimeout(() => input.select(), 0);
   }
 
-  updateConsumption(id: string, newValue: number) {
-    this.waterService.updateReading(id, { Consumption: newValue }).subscribe({
-      next: () => {
-       
-      },
-      error: (err) => {
-        this.toast.error('❌ Failed to update consumption.');
-      }
-    }); 
+  updateConsumption(id: string, newValue: number): Observable<any> {
+    return this.waterService.updateReading(id, { Consumption: newValue });
   }
   searchByUnitNumber() {
     if (!this.searchUnit) {
@@ -299,7 +281,10 @@ export class WaterReadingComponent {
   }
 
   goNextElement(currentIndex: number) {
-    console.log(this.readingInputs.toArray()[currentIndex + 1].nativeElement);
+    this.readingInputs.toArray()[currentIndex + 1].nativeElement.focus();
   }
-  
+
+  editCurrentValue(event: Event){
+    this.editValue = Number((event.target as HTMLInputElement).value || 0);
+  }
 }

@@ -101,22 +101,19 @@
           <td class="p-3 border-b">{{ item.unit.building.BuildingNumber }}</td>
           <td class="p-3 border-b">{{ item.unit.UnitNumber }}</td>
           <td class="p-3 border-b">{{ item.BillingMonth }}</td>
-         <td class="p-3 border-b text-right" (click)="startEdit(i, item.Consumption)" #readingInput>
-            <ng-container *ngIf="!isEditing(i); else editInput">
-              {{ item.Consumption }}
-            </ng-container>
-            <ng-template #editInput>
+          <td class="p-3 border-b text-right">
               <input
-                type="number"
-                class="border rounded px-2 py-1 w-24 text-right"
-                [(ngModel)]="editValue"
-                (blur)="finishEdit(i)"
-                (keydown)="onKeydown($event, i)"
-                (focus)="selectText($event)" 
-              />
-            </ng-template>
-          </td>
-          
+                  #readingInput
+                  value="item.Consumption"
+                  type="number"
+                  class="border outline-none px-2 py-1 w-24 text-right"
+                  [(ngModel)]="item.Consumption"
+                  (input)="editCurrentValue($event)"
+                  (blur)="finishEdit(i)"
+                  (keydown)="onKeydown($event, i)"
+                  (focus)="selectText($event)" 
+                />
+            </td>
         </tr>
         <tr *ngIf="readings.length === 0">
           <td colspan="7" class="text-center py-3 text-gray-500">No records found.</td>
