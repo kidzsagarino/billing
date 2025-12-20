@@ -106,6 +106,10 @@ export class BillingController {
         const moveIn = await this.fastify.MoveIn.findOne({ where: { UnitId: unit.Id } });
         if (moveIn && !moveIn.FullName) continue;
 
+        const hasWaterReading = await this.fastify.WaterReading.findOne({ where: { UnitId: unit.Id, billingMonth: billingMonth}});
+
+        if(!hasWaterReading) continue;
+
         const lastBill = await this.getLastBill(unit.Id, prevMonthStr);
         const lastWaterReading = await this.getWaterReading(unit.Id, prevMonthStr);
         const { penalty, overdueAmount } = await this.getPenaltyAndOverdue(unit, prevMonthStr, lastBill);
