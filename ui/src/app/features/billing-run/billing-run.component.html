@@ -127,7 +127,7 @@
               class="border px-2 py-2 text-center"
               [ngClass]="{
                 'text-red-600': bill.Balance > 0,
-                'text-gray-700': bill.Balance <= 0
+                'text-black': bill.Balance <= 0
               }"
             >
               ₱{{ bill.Balance | number:'1.2-2' }}
