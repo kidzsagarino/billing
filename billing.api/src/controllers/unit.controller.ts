@@ -1,6 +1,5 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { v4 as uuidv4 } from 'uuid';
-import { Unit, MoveIn } from '../models';
 
 export class UnitController {
   private fastify: FastifyInstance;
@@ -9,7 +8,6 @@ export class UnitController {
     this.fastify = fastify;
   }
 
-  // GET all units
   getAll = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const units = await this.fastify.Unit.findAll();
@@ -20,7 +18,6 @@ export class UnitController {
     }
   };
 
-  // GET unit by ID
   getById = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const { id } = request.params as { id: string };
@@ -33,7 +30,6 @@ export class UnitController {
     }
   };
 
-  // CREATE a new unit
   create = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const { UnitNumber, FloorNumber, BuildingId, UnitType, Area } = request.body as any;
@@ -54,7 +50,6 @@ export class UnitController {
     }
   };
 
-  // UPDATE unit
   update = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const { id } = request.params as { id: string };
@@ -71,7 +66,6 @@ export class UnitController {
     }
   };
 
-  // DELETE unit
   delete = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const { id } = request.params as { id: string };
@@ -86,7 +80,6 @@ export class UnitController {
     }
   };
 
-  // GET the current MoveIn FullName by unit number
   getMoveinName = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const { unitNumber } = request.query as { unitNumber: string };

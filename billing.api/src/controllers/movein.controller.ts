@@ -9,7 +9,6 @@ export class MoveInController {
     this.fastify = fastify;
   }
 
-  // GET all move-ins (paginated)
   getAll = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const { page = 1, limit = 10, unitNumber } = request.query as any;
@@ -55,7 +54,6 @@ export class MoveInController {
     }
   };
 
-  // SEARCH move-ins by unit number
   search = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const { q } = request.query as { q?: string };
@@ -89,7 +87,6 @@ export class MoveInController {
     }
   };
 
-  // FILTER move-ins by buildingId and/or unitId
   filter = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const { page = 1, limit = 10, buildingId, unitId } = request.query as any;
@@ -134,7 +131,6 @@ export class MoveInController {
     }
   };
 
-  // GET move-in by id
   getById = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const { id } = request.params as { id: string };
@@ -155,7 +151,6 @@ export class MoveInController {
     }
   };
 
-  // CREATE move-in
   create = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const { FullName, Email, Mobile, UnitId, MoveInDate, MoveOutDate, Status } =
@@ -179,7 +174,6 @@ export class MoveInController {
     }
   };
 
-  // UPDATE move-in
   update = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const { id } = request.params as { id: string };
@@ -207,7 +201,6 @@ export class MoveInController {
     }
   };
 
-  // DELETE move-in
   delete = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const { id } = request.params as { id: string };

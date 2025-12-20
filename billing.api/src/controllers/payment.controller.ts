@@ -8,7 +8,6 @@ export class PaymentController {
     this.fastify = fastify;
   }
 
-  // GET all payments
   getAll = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const payments = await this.fastify.Payment.findAll({
@@ -28,7 +27,6 @@ export class PaymentController {
     }
   };
 
-  // CREATE payment
   create = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const { UnitNumber, PaymentDate, Amount, ARNumber, PaymentType, RefNumber, BillingMonth } =
@@ -57,7 +55,6 @@ export class PaymentController {
     }
   };
 
-  // UPDATE payment
   update = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const { id } = request.params as { id: string };
@@ -89,7 +86,6 @@ export class PaymentController {
     }
   };
 
-  // UPDATE corresponding billing after a payment
   private updateBillingPayment = async (unitId: string, billingMonth: string) => {
     const bill = await this.fastify.Billing.findOne({
       where: { UnitId: unitId, BillingMonth: billingMonth }
@@ -115,7 +111,6 @@ export class PaymentController {
     });
   };
 
-  // SEARCH payments by UnitNumber
   searchByUnitNumber = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const { UnitNumber } = request.body as { UnitNumber: string };
@@ -139,7 +134,6 @@ export class PaymentController {
     }
   };
 
-  // SEARCH payments by BillingMonth
   searchByBillingMonth = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const { BillingMonth } = request.body as { BillingMonth: string };

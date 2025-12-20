@@ -1,5 +1,4 @@
 import { FastifyInstance } from "fastify";
-import { Building, Unit } from "../models";
 
 export async function findUnitId(buildingNumber: number, unitNumber: number, fastify: FastifyInstance): Promise<string | null> {
     const building = await fastify.Building.findOne({ where: { BuildingNumber: buildingNumber } });

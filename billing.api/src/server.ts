@@ -14,7 +14,6 @@ import fastifyJwt from '@fastify/jwt';
 
 const app: FastifyInstance = Fastify({ logger: true });
 
-// Enable CORS
 app.register(cors, {
   origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -26,7 +25,6 @@ app.register(fastifyJwt, {
 
 app.register(authPlugin);
 
-// Register routes with API prefix
 app.register(billingRoutes, { prefix: '/api/billing' });
 app.register(buildingRoutes, { prefix: '/api/buildings' });
 app.register(unitRoutes, { prefix: '/api/units' });
@@ -36,7 +34,6 @@ app.register(paymentRoutes, { prefix: '/api/payments' });
 app.register(userRoutes, { prefix: '/api/users' });
 
 const start = async () => {
-
   await app.register(fastifyEnv, {
     dotenv: true,
     schema: {
@@ -61,7 +58,7 @@ const start = async () => {
     }
 });
 
-app.register(fp);
+  app.register(fp);
 
   try {
     await app.listen({ port: app.config.PORT })

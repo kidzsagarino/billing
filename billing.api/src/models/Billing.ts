@@ -27,7 +27,6 @@ export class Billing extends Model<
   declare Status: string;
   declare CreatedAt: CreationOptional<Date>;
   declare UpdatedAt: CreationOptional<Date>;
-
 }
 
 export function initBilling(sequelize: Sequelize){
@@ -96,12 +95,11 @@ export function initBilling(sequelize: Sequelize){
       },
     },
     {
+      sequelize,
       tableName: 'Billings',
       timestamps: false,
-      sequelize: sequelize
     }
   );
-
   
   return Billing;
 }

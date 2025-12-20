@@ -19,12 +19,11 @@ export default fp(async (fastify) => {
       dialect: 'mysql',
       logging: false
     }
-  )
+  );
 
   await sequelize.authenticate();
   fastify.log.info('✅ Database connected');
-
-  // 1. Initialize Models
+  
   const Billing = initBilling(sequelize);
   const Building = initBuilding(sequelize);
   const MoveIn = initMoveIn(sequelize);
@@ -33,29 +32,21 @@ export default fp(async (fastify) => {
   const User = initUser(sequelize);
   const WaterReading = initWaterReading(sequelize);
 
-  // 2. Apply Associations (Based on your provided logic)
-  // Unit <-> Billing
   Unit.hasMany(Billing, { foreignKey: 'UnitId', as: 'billings' });
   Billing.belongsTo(Unit, { foreignKey: 'UnitId', as: 'unit' });
 
-  // Building <-> Unit
   Building.hasMany(Unit, { foreignKey: 'BuildingId', as: 'units' });
   Unit.belongsTo(Building, { foreignKey: 'BuildingId', as: 'building' });
 
-  // Unit <-> MoveIn
   Unit.hasMany(MoveIn, { foreignKey: 'UnitId', as: 'moveins' });
   MoveIn.belongsTo(Unit, { foreignKey: 'UnitId', as: 'unit' });
 
-  // Unit <-> WaterReading 
-  // FIXED: 'as' must be plural for hasMany to avoid naming collisions
   Unit.hasMany(WaterReading, { foreignKey: 'UnitId', as: 'waterReadings' });
   WaterReading.belongsTo(Unit, { foreignKey: 'UnitId', as: 'unit' });
 
-  // Unit <-> Payment
   Unit.hasMany(Payment, { foreignKey: 'UnitId', as: 'payments' });
   Payment.belongsTo(Unit, { foreignKey: 'UnitId', as: 'unit' });
 
-  // 3. Decorate Fastify
   fastify.decorate('sequelize', sequelize);
   fastify.decorate('Billing', Billing);
   fastify.decorate('Building', Building);
@@ -67,5 +58,5 @@ export default fp(async (fastify) => {
 
   fastify.addHook('onClose', async () => {
     await sequelize.close()
-  })
-})
+  });
+});

@@ -14,7 +14,6 @@ interface WaterReadingAttributes {
   Consumption: number;
 }
 
-// Optional fields for creation
 type WaterReadingCreationAttributes = Optional<
   WaterReadingAttributes,
   'Id' | 'TotalAmount' | 'CreatedAt' | 'UpdatedAt'
@@ -37,7 +36,6 @@ export class WaterReading
   public Consumption!: number;
 }
 
-// Factory function to initialize the model
 export function initWaterReading(sequelize: Sequelize) {
   WaterReading.init(
     {
@@ -88,7 +86,7 @@ export function initWaterReading(sequelize: Sequelize) {
       },
     },
     {
-      sequelize, // ✅ use the passed Sequelize instance
+      sequelize,
       tableName: 'WaterReadings',
       timestamps: false,
     }

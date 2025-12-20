@@ -9,7 +9,7 @@ export class UserController {
   constructor(fastify: FastifyInstance) {
     this.fastify = fastify;
   }
-  // LOGIN user
+
   login = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const { email, password } = request.body as { email: string; password: string };
@@ -45,7 +45,6 @@ export class UserController {
     }
   };
 
-  // REGISTER new user
   register = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const { email, password, username, role } = request.body as {
@@ -71,7 +70,7 @@ export class UserController {
         Email: email,
         PasswordHash: passwordHash,
         Username: username,
-        Role: role ?? 1, // default role if not provided
+        Role: role ?? 1,
       });
 
       reply.code(201).send({

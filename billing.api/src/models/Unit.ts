@@ -46,9 +46,9 @@ export function initUnit(sequelize: Sequelize) {
       },
     },
     {
-      sequelize, // ✅ use the passed Sequelize instance
+      sequelize,
       tableName: 'units',
-      timestamps: false, // Because CreatedAt is manually defined
+      timestamps: false,
     }
   );
 

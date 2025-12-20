@@ -9,7 +9,6 @@ export class Building extends Model<InferAttributes<Building>, InferCreationAttr
   declare CreatedAt: CreationOptional<Date>;
 }
 
-// Use a factory function to initialize the model with a Sequelize instance
 export function initBuilding(sequelize: Sequelize) {
   Building.init(
     {
@@ -45,10 +44,10 @@ export function initBuilding(sequelize: Sequelize) {
         field: 'CreatedAt',
       },
     },
-    {
+    { 
+      sequelize,
       tableName: 'buildings',
       timestamps: false,
-      sequelize, // ✅ Use the passed Sequelize instance
     }
   );
 

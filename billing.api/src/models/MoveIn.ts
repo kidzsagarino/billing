@@ -60,7 +60,7 @@ export function initMoveIn(sequelize: Sequelize) {
       },
     },
     {
-      sequelize: sequelize, // ✅ use the passed Sequelize instance
+      sequelize,
       tableName: 'moveins',
       timestamps: false,
     }

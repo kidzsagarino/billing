@@ -69,7 +69,7 @@ export function initPayment(sequelize: Sequelize) {
       },
     },
     {
-      sequelize: sequelize, // ✅ use the passed Sequelize instance
+      sequelize,
       tableName: 'payments',
       timestamps: false,
     }

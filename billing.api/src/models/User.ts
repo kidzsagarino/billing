@@ -46,9 +46,9 @@ export function initUser(sequelize: Sequelize) {
             },
         },
         {
-            sequelize, // ✅ use the passed Sequelize instance
+            sequelize,
             tableName: 'users',
-            timestamps: false, // manually defined timestamps
+            timestamps: false,
         }
     );
 
