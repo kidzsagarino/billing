@@ -41,6 +41,10 @@ export function initMoveIn(sequelize: Sequelize) {
       MoveInDate: {
         type: DataTypes.DATE,
         allowNull: false,
+        get() {
+          const raw = this.getDataValue('MoveInDate');
+          return raw ? raw.toISOString().slice(0, 10) : null;
+        }
       },
       MoveOutDate: {
         type: DataTypes.DATE,

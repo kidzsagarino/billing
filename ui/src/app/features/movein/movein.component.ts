@@ -125,6 +125,7 @@ export class MoveInComponent {
   }
 
   editMoveIn(moveIn: any) {
+    console.log(moveIn);
     this.moveIn = { ...moveIn };
     this.isEditing = true;
     this.openModal();
@@ -196,7 +197,6 @@ export class MoveInComponent {
     this.showUnitDropdown = false;
   }
 
-  // Add this to trigger backend search on unit filter change
   onUnitFilterChange() {
     this.page = 1;
     this.loadMoveIns();

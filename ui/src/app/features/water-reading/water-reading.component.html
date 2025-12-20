@@ -102,11 +102,10 @@
           <td class="p-3 border-b text-right">
               <input
                   #readingInput
-                  value="item.Consumption"
                   type="number"
                   class="border outline-none px-2 py-1 w-24 text-right"
-                  [(ngModel)]="item.Consumption"
-                  (input)="editCurrentValue($event)"
+                  [(ngModel)]="readings[i].Consumption"
+                  (ngModelChange)="editCurrentValue($event)"
                   (blur)="finishEdit(i)"
                   (keydown)="onKeydown($event, i)"
                   (focus)="selectText($event)" 

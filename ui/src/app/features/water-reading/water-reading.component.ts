@@ -234,8 +234,8 @@ export class WaterReadingComponent {
   }
 
   onKeydown(event: KeyboardEvent, index: number) {
-
     if (event.key === 'Enter' || event.key == 'Tab') {
+      event.preventDefault();
       this.finishEdit(index);
     } else if (event.key === 'Escape') {
       this.cancelEdit();
@@ -282,10 +282,15 @@ export class WaterReadingComponent {
   }
 
   goNextElement(currentIndex: number) {
-    this.readingInputs.toArray()[currentIndex + 1].nativeElement.focus();
+    const inputs = this.readingInputs.toArray();
+    const next = inputs[currentIndex + 1];
+
+    if (next) {
+      setTimeout(() => next.nativeElement.focus());
+    }
   }
 
-  editCurrentValue(event: Event){
-    this.editValue = Number((event.target as HTMLInputElement).value || 0);
+  editCurrentValue(value: number){
+    this.editValue = Number(value) || 0;
   }
 }

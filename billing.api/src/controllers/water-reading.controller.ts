@@ -12,6 +12,7 @@ interface WaterReadingBody {
   totalAmount: number;
   ratePerCubic: number;
   readingDate: Date;
+  consumption: number;
 }
 
 export class WaterReadingController {
@@ -138,21 +139,15 @@ export class WaterReadingController {
   update = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const { id } = request.params as { id: string };
-      const body = request.body as WaterReadingBody;
-      const consumption = Math.max(0, body.currentReading - body.previousReading);
-      const total = consumption * body.ratePerCubic;
+      const body = request.body as any;
+      
+      const waterReading = await this.fastify.WaterReading.findByPk(id);
 
-      const [updated] = await this.fastify.WaterReading.update(
-        {
-          PreviousReading: body.previousReading,
-          CurrentReading: body.currentReading,
-          RatePerCubic: body.ratePerCubic,
-          TotalAmount: total,
-        },
-        { where: { Id: id } }
-      );
+       if (!waterReading) return reply.status(404).send({ message: 'Reading not found' });
 
-      if (!updated) return reply.status(404).send({ message: 'Reading not found' });
+      await waterReading.update({
+          Consumption: body.Consumption
+        });
 
       reply.send({ message: 'Water reading updated successfully' });
     } catch (err) {
@@ -165,7 +160,6 @@ export class WaterReadingController {
       const { billingMonth } = request.body as { billingMonth: string };
       const allUnits = await this.fastify.Unit.findAll();
       const newReadings = allUnits
-        .filter((u) => !this.fastify.WaterReading.findOne({ where: { UnitId: u.Id, BillingMonth: billingMonth } }))
         .map((u) => ({
           UnitId: u.Id,
           BillingMonth: billingMonth,
