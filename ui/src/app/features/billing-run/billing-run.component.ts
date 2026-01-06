@@ -12,6 +12,8 @@ import { BillingService } from '../../services/billing.service';
 import { HotToastService } from '@ngxpert/hot-toast';
 import { MonthYearPipe } from '../../pipes/month-year.pipe';
 
+import * as XLSX from 'xlsx';
+
 export interface Billing {
   FullName: string;
   BuildingNumber: string;
@@ -77,7 +79,6 @@ export class BillingRunComponent {
   loadBilling() {
     this.loading = true;
 
-    // Format YYYY-MM
     const monthStr = this.selectedMonth.toString().padStart(2, '0');
     const billingMonth = `${this.selectedYear}-${monthStr}`;
 
@@ -90,7 +91,6 @@ export class BillingRunComponent {
         else{
           this.billings = data.data;
         }
-        // Apply optional search filters
        
         this.loading = false;
       },
@@ -127,5 +127,18 @@ export class BillingRunComponent {
     else{
       this.loadBilling();
     }
+  }
+  exportToExcel(): void{
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(this.billings);
+    const workbook: XLSX.WorkBook = { Sheets: { 'Billing': worksheet }, SheetNames: ['Billing'] };
+
+    let fileName = '';
+
+    if(this.searchTerm.trim()){
+      fileName = `SOA_${this.searchTerm}.xlsx`;
+    } else {
+      fileName = `Billing_${this.billingMonthString}.xlsx`;
+    }
+    XLSX.writeFile(workbook, fileName);
   }
 }

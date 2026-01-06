@@ -4,11 +4,20 @@
     <div class="relative flex items-center justify-center">
 
         <!-- Generate Billing -->
-        <button 
-          class="bg-blue-600 text-white font-semibold rounded-md px-5 py-2 shadow-sm hover:shadow-md hover:bg-blue-700 transition"
-          (click)="generateBilling()">
-          Generate Billing
-        </button>
+        <div class="mr-3">
+          <button 
+            class="bg-blue-600 text-white font-semibold rounded-md px-5 py-2 shadow-sm hover:shadow-md hover:bg-blue-700 transition"
+            (click)="generateBilling()">
+            Generate Billing
+          </button>
+        </div>
+        <div>
+          <button 
+            class="bg-gray-600 text-white font-semibold rounded-md px-5 py-2 shadow-sm hover:shadow-md hover:bg-gray-700 transition"
+            (click)="exportToExcel()">
+            Export to Excel
+          </button>
+        </div>
 
         <!-- Generate SOA
         <button 

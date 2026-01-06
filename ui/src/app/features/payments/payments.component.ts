@@ -8,6 +8,8 @@ import { PaymentTypeOptions, PaymentType  } from '../../constants/paymenttype';
 import { HotToastService } from '@ngxpert/hot-toast';
 import { MonthYearPipe } from '../../pipes/month-year.pipe';
 
+import * as XLSX from 'xlsx';
+
 @Component({
   selector: 'app-payments',
   standalone: true,
@@ -195,5 +197,19 @@ export class PaymentsComponent {
     };
     this.isEditing = false;
   } 
+
+  exportToExcel(): void{
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(this.payments);
+    const workbook: XLSX.WorkBook = { Sheets: { 'Payments': worksheet }, SheetNames: ['Payments'] };
+
+    let fileName = '';
+
+    if(this.searchUnit.trim()){
+      fileName = `Payments_${this.searchUnit}.xlsx`;
+    } else {
+      fileName = `Payments_${this.selectedYear}-${this.selectedMonth.toString().padStart(2, '0')}.xlsx`;
+    }
+    XLSX.writeFile(workbook, fileName);
+  }
 
 }

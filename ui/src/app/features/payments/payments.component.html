@@ -168,15 +168,29 @@
   </div>
 
 <div class="p-6 bg-gray-50 min-h-screen">
+
   <div class="flex items-center justify-between mb-4">
-    <h1 class="text-2xl font-bold text-gray-800">Payments</h1>
-    <button
-      (click)="openModal()"
-      class="bg-blue-600 text-white font-semibold rounded-md px-5 py-2 shadow-sm hover:shadow-md hover:bg-blue-700 transition"
-    >
-      + Add Payment
-    </button>
-  </div>
+  <h1 class="text-2xl font-bold text-gray-800">Payments</h1>
+    <div class="relative flex items-center justify-center">
+        <div class="mr-3">
+        <button
+          (click)="openModal()"
+          class="bg-blue-600 text-white font-semibold rounded-md px-5 py-2 shadow-sm hover:shadow-md hover:bg-blue-700 transition"
+        >
+          + Add Payment
+        </button>
+      </div>
+        
+      <div>
+        <button 
+        (click)="exportToExcel()"
+        class="bg-gray-600 text-white font-semibold rounded-md px-5 py-2 shadow-sm hover:shadow-md hover:bg-gray-700 transition"
+        >
+        Export to Excel
+      </button>
+      </div>
+    </div>
+</div>
 
   <div class="bg-white rounded-lg grid grid-cols-4 gap-5 mb-3 w-100">
     <!-- Building -->
