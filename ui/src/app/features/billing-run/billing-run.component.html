@@ -125,7 +125,7 @@
           <td class="border px-2 py-2 text-center">{{ bill.UnitNumber }}</td>
           <td class="border px-2 py-2 text-left">{{ bill.FullName }}</td>
           <td class="border px-2 py-2 text-center">{{ bill.BillingMonth | monthYear }}</td>
-          <td class="border px-2 py-2 text-center">{{ bill.DueDate | date:'MMM, dd, yy' }}</td>
+          <td class="border px-2 py-2 text-center">{{ bill.DueDate }}</td>
           <td class="border px-2 py-2 text-center">₱{{ bill.CondoDues | number:'1.2-2' }}</td>
           <td class="border px-2 py-2 text-center">₱{{ bill.WaterBill | number:'1.2-2' }}</td>
           <td class="border px-2 py-2 text-center">₱{{ bill.OverdueAmount | number:'1.2-2' }}</td>

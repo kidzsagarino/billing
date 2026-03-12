@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import isOverDue from '../service/isOverDue';
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+import dayjs from 'dayjs';
 
 export class BillingController {
   private fastify: FastifyInstance;
@@ -183,7 +184,7 @@ export class BillingController {
       const formatted = bills.map((bill: any) => ({
         BillingId: bill.Id,
         BillingMonth: bill.BillingMonth,
-        DueDate: bill.DueDate,
+        DueDate: dayjs(bill.DueDate).format("MMM DD, YY"),
         FullName: bill.unit?.moveins?.[0]?.FullName ?? 'Vacant',
         Email: bill.unit?.moveins?.[0]?.Email ?? '',
         Mobile: bill.unit?.moveins?.[0]?.Mobile ?? '',
@@ -228,7 +229,7 @@ export class BillingController {
       const formatted = bills.map((bill: any) => ({
         BillingId: bill.Id,
         BillingMonth: bill.BillingMonth,
-        DueDate: bill.DueDate,
+        DueDate: dayjs(bill.DueDate).format("MMM DD, YY"),
         FullName: bill.unit?.moveins?.[0]?.FullName ?? 'Vacant',
         Email: bill.unit?.moveins?.[0]?.Email ?? '',
         Mobile: bill.unit?.moveins?.[0]?.Mobile ?? '',
