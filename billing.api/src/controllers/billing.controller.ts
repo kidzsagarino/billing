@@ -183,7 +183,7 @@ export class BillingController {
 
       const formatted = bills.map((bill: any) => ({
         BillingId: bill.Id,
-        BillingMonth: bill.BillingMonth,
+        BillingMonth: dayjs(bill.billingMonth).format("MMMM YYYY"),
         DueDate: dayjs(bill.DueDate).format("MMM DD, YY"),
         FullName: bill.unit?.moveins?.[0]?.FullName ?? 'Vacant',
         Email: bill.unit?.moveins?.[0]?.Email ?? '',
@@ -228,7 +228,7 @@ export class BillingController {
 
       const formatted = bills.map((bill: any) => ({
         BillingId: bill.Id,
-        BillingMonth: bill.BillingMonth,
+        BillingMonth: dayjs(bill.billingMonth).format("MMMM YYYY"),
         DueDate: dayjs(bill.DueDate).format("MMM DD, YY"),
         FullName: bill.unit?.moveins?.[0]?.FullName ?? 'Vacant',
         Email: bill.unit?.moveins?.[0]?.Email ?? '',
