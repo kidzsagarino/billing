@@ -4,7 +4,7 @@ import { MatTableModule } from '@angular/material/table';
 import { FormsModule, NgForm } from '@angular/forms';
 import PaymentService from '../../services/payment.service';
 import { UnitService } from '../../services/unit.service';
-import { PaymentTypeOptions, PaymentType  } from '../../constants/paymenttype';
+import { PaymentTypeOptions, PaymentType } from '../../constants/paymenttype';
 import { HotToastService } from '@ngxpert/hot-toast';
 import { MonthYearPipe } from '../../pipes/month-year.pipe';
 
@@ -19,7 +19,7 @@ import * as XLSX from 'xlsx';
 })
 export class PaymentsComponent {
 
-  constructor(private paymentService: PaymentService, private unitService: UnitService, private toast: HotToastService) {}
+  constructor(private paymentService: PaymentService, private unitService: UnitService, private toast: HotToastService) { }
 
   selectedYear: number = 2025;
   selectedMonth: number = 10;
@@ -28,7 +28,7 @@ export class PaymentsComponent {
   isEditing: boolean = false;
 
   showModal: boolean = false;
-   payment = {
+  payment = {
     Id: '',
     BillingMonth: '',
     BillingYear: '',
@@ -45,7 +45,7 @@ export class PaymentsComponent {
   displayedColumns: string[] = ['date', 'tenant', 'amount', 'method', 'status'];
   paymentTypes = PaymentTypeOptions;
 
-  payments:any = [];
+  payments: any = [];
 
   years: number[] = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i); // last 5 years
   months: number[] = Array.from({ length: 12 }, (_, i) => i + 1);
@@ -82,22 +82,22 @@ export class PaymentsComponent {
     });
   }
 
-  loadPaymentsForBillingMonth(){
+  loadPaymentsForBillingMonth() {
   }
 
   searchMoveinNameInUnit() {
     this.unitService.getMoveInNameByUnit(this.payment.UnitNumber).subscribe({
-      next: (res) => {  
+      next: (res) => {
         this.moveInName = res.FullName || '';
-      } ,
+      },
       error: (err) => {
         this.toast.error('Error loading move-in name:', err);
       }
     });
-  } 
+  }
 
   submitPayment() {
-     if (this.paymentForm.invalid) {
+    if (this.paymentForm.invalid) {
       this.paymentForm.control.markAllAsTouched();
 
       return;
@@ -106,10 +106,9 @@ export class PaymentsComponent {
     this.payment.BillingMonth = `${this.payment.BillingYear}-${this.payment.BillingMonth.toString().padStart(2, '0')}`;
     this.paymentService.createPayment(this.payment).subscribe({
       next: (res) => {
-        this.toast.success('Payment created successfully:',  res); 
-        this.loadPayments();
-      }
-      ,
+        this.toast.success('Payment created successfully:', res);
+        this.searchByBillingMonth();
+      },
       error: (err) => {
         this.toast.error('Error creating payment: ' + (err.error?.error || err.error || err.message || 'Unknown error'));
       }
@@ -118,13 +117,16 @@ export class PaymentsComponent {
   }
 
   editPayment(payment: any) {
-    this.payment = { ...payment };
+    this.payment.BillingYear = payment.BillingMonthRaw.split('-')[0];
+    this.payment.BillingMonth = Number(payment.BillingMonthRaw.split('-')[1]).toString();
     this.payment.PaymentType = PaymentType[payment.PaymentType as keyof typeof PaymentType];
-    this.payment.BillingYear = payment.BillingMonth.split('-')[0];
-    this.payment.BillingMonth = Number(payment.BillingMonth.split('-')[1]).toString();
-    this.payment.UnitNumber = payment.unit?.UnitNumber || '';
-    this.payment.PaymentDate = payment.PaymentDate.split('T')[0];
-    this.moveInName = payment.unit?.moveins?.[0]?.FullName || '';
+    this.payment.UnitNumber = payment.UnitNumber || '';
+    this.moveInName = payment.MoveInFullName || '';
+    this.payment.PaymentDate = payment.PaymentDateRaw;
+    this.payment.Amount = payment.Amount || null;
+    this.payment.ARNumber = payment.ARNUmber || '';
+    this.payment.RefNumber = payment.RefNumber || '';
+    this.payment.Id = payment.PaymentID || '';
     this.isEditing = true;
     this.openModal();
   }
@@ -139,10 +141,9 @@ export class PaymentsComponent {
     this.payment.BillingMonth = `${this.payment.BillingYear}-${this.payment.BillingMonth.toString().padStart(2, '0')}`;
     this.paymentService.updatePayment(this.payment.Id, this.payment).subscribe({
       next: (res: any) => {
-        this.toast.success('Payment updated successfully:',  res);
-        this.loadPayments();
-      }
-      ,
+        this.toast.success('Payment updated successfully:', res);
+        this.searchByBillingMonth();
+      },
       error: (err: any) => {
         this.toast.error('Error updating payment:', err);
       }
@@ -174,11 +175,11 @@ export class PaymentsComponent {
     this.paymentService.searchByBillingMonth(billingMonth).subscribe({
       next: (res) => {
         this.payments = res;
-      } ,
+      },
       error: (err) => {
         this.toast.error('Error loading payments by billing month:', err);
       }
-    }); 
+    });
   }
 
   resetForm() {
@@ -196,15 +197,15 @@ export class PaymentsComponent {
       RefNumber: ''
     };
     this.isEditing = false;
-  } 
+  }
 
-  exportToExcel(): void{
+  exportToExcel(): void {
     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(this.payments);
     const workbook: XLSX.WorkBook = { Sheets: { 'Payments': worksheet }, SheetNames: ['Payments'] };
 
     let fileName = '';
 
-    if(this.searchUnit.trim()){
+    if (this.searchUnit.trim()) {
       fileName = `Payments_${this.searchUnit}.xlsx`;
     } else {
       fileName = `Payments_${this.selectedYear}-${this.selectedMonth.toString().padStart(2, '0')}.xlsx`;

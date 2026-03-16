@@ -1,6 +1,6 @@
+import dayjs from 'dayjs';
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { v4 as uuidv4 } from 'uuid';
-
 export class PaymentController {
   private fastify: FastifyInstance;
 
@@ -20,7 +20,19 @@ export class PaymentController {
           },
         ],
       });
-      reply.code(200).send(payments);
+      reply.code(200).send(payments.map(payment => ({
+        PaymentID: payment.Id,
+        UnitNumber: payment.unit?.UnitNumber || null,
+        BillingMonthYear: dayjs(payment.billingMonth).format("MMMM YYYY"),
+        MoveInFullName: payment.unit?.moveins?.[0]?.FullName || 'Vacant',
+        PaymentDate: dayjs(payment.PaymentDate).format("MMM DD, YYYY"),
+        ARNUmber: payment.ARNumber,
+        Amount: payment.Amount,
+        PaymentType: payment.PaymentType,
+        RefNumber: payment.RefNumber,
+        BillingMonthRaw: payment.billingMonth
+      })));
+
     } catch (error) {
       console.error('Error fetching payments:', error);
       reply.status(500).send({ error: 'Failed to fetch payments' });
@@ -127,7 +139,31 @@ export class PaymentController {
         ],
       });
 
-      reply.code(200).send(payments);
+      reply.code(200).send(
+        payments.map((payment) => {
+          const billingMonthValue = payment.billingMonth ?? payment.BillingMonth ?? null;
+
+          return {
+            PaymentID: payment.Id,
+            UnitNumber: payment.unit?.UnitNumber || null,
+            BillingMonthYear: billingMonthValue
+              ? dayjs(billingMonthValue).format("MMMM YYYY")
+              : null,
+            BillingMonthRaw: billingMonthValue,
+            MoveInFullName: payment.unit?.moveins?.[0]?.FullName || "Vacant",
+            PaymentDate: payment.PaymentDate
+              ? dayjs(payment.PaymentDate).format("MMM DD, YYYY")
+              : null,
+            ARNUmber: payment.ARNumber,
+            Amount: payment.Amount,
+            PaymentType: payment.PaymentType,
+            RefNumber: payment.RefNumber,
+            PaymentDateRaw: payment.PaymentDate
+              ? dayjs(payment.PaymentDate).format("YYYY-MM-DD")
+              : null,
+          };
+        })
+      );
     } catch (error) {
       console.error('Error searching payments by unit:', error);
       reply.status(500).send({ error: 'Failed to search payments' });
@@ -147,7 +183,32 @@ export class PaymentController {
         ],
       });
 
-      reply.code(200).send(payments);
+      reply.code(200).send(
+        payments.map((payment) => {
+          const billingMonthValue = payment.billingMonth ?? payment.BillingMonth ?? null;
+
+          return {
+            PaymentID: payment.Id,
+            UnitNumber: payment.unit?.UnitNumber || null,
+            BillingMonthYear: billingMonthValue
+              ? dayjs(billingMonthValue).format("MMMM YYYY")
+              : null,
+            BillingMonthRaw: billingMonthValue,
+            MoveInFullName: payment.unit?.moveins?.[0]?.FullName || "Vacant",
+            PaymentDate: payment.PaymentDate
+              ? dayjs(payment.PaymentDate).format("MMM DD, YYYY")
+              : null,
+            ARNUmber: payment.ARNumber,
+            Amount: payment.Amount,
+            PaymentType: payment.PaymentType,
+            RefNumber: payment.RefNumber,
+            PaymentDateRaw: payment.PaymentDate
+              ? dayjs(payment.PaymentDate).format("YYYY-MM-DD")
+              : null,
+          };
+        })
+      );
+
     } catch (error) {
       console.error('Error searching payments by month:', error);
       reply.status(500).send({ error: 'Failed to search payments' });

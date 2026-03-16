@@ -9,7 +9,8 @@
       <form (ngSubmit)="isEditing ? updatePayment() : submitPayment()" #paymentForm="ngForm" class="space-y-4">
         <div class="grid grid-cols-2 gap-2">
           <div class="relative">
-            <select 
+            <select
+              [disabled]="isEditing"
               name="billingYear"
               [(ngModel)]="payment.BillingYear"
               #yearControl="ngModel" class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -28,14 +29,15 @@
           </div>
 
           <div class="relative">
-            <select 
+            <select
+              [disabled]="isEditing"
               name="billingMonth"
               [(ngModel)]="payment.BillingMonth"
               #monthControl="ngModel" class="peer block w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
               required
             >
               <option value="" disabled selected></option>
-              <option *ngFor="let m of months" [value]="m">{{ m }}</option>
+              <option *ngFor="let m of months" [value]="m">{{ m | monthYear}}</option>
             </select>
             <label class="absolute left-3 top-2 text-gray-400 text-sm peer-focus:text-blue-500 peer-focus:text-sm transition-all">Month</label>
             
@@ -49,6 +51,7 @@
 
         <div class="relative">
           <input 
+            [disabled]="isEditing"
             type="text"
             name="unit"
             [(ngModel)]="payment.UnitNumber"
@@ -278,12 +281,12 @@
             </td>
           </tr>
           <tr class="hover:bg-gray-50 transition" *ngFor="let payment of payments">
-            <td class="py-2 px-4 border-b">{{ payment.unit.UnitNumber }}</td>
-            <td class="py-2 px-4 border-b">{{ payment.unit.moveins[0].FullName }}</td>
-            <td class="py-2 px-4 border-b">{{ payment.BillingMonth | monthYear }}</td>
-            <td class="py-2 px-4 border-b">{{ payment.PaymentDate | date:'MMM, dd, yy' }}</td>
+            <td class="py-2 px-4 border-b">{{ payment.UnitNumber }}</td>
+            <td class="py-2 px-4 border-b">{{ payment.MoveInFullName }}</td>
+            <td class="py-2 px-4 border-b">{{ payment.BillingMonthYear }}</td>
+            <td class="py-2 px-4 border-b">{{ payment.PaymentDate}}</td>
             <td class="py-2 px-4 border-b">₱{{ payment.Amount }}</td>
-            <td class="py-2 px-4 border-b">{{ payment.ARNumber }}</td>
+            <td class="py-2 px-4 border-b">{{ payment.ARNUmber }}</td>
             <td class="py-2 px-4 border-b">{{ payment.PaymentType}}</td>
             <td class="py-2 px-4 border-b">{{ payment.RefNumber }}</td>
             <td class="py-2 px-4 text-center">
